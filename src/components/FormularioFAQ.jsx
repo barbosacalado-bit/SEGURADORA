@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Send, ChevronDown, CheckCircle, HelpCircle, ShieldAlert } from 'lucide-react';
+import { Send, ChevronDown, CheckCircle, HelpCircle, PhoneCall, ArrowRight } from 'lucide-react';
 
 export default function FormularioFAQ({ produtoSelecionado }) {
   const [formData, setFormData] = useState({
@@ -244,17 +244,25 @@ export default function FormularioFAQ({ produtoSelecionado }) {
               })}
             </div>
 
-            {/* Caixa de contato rápido */}
-            <div className="p-4 bg-blue-50 rounded-2xl border border-blue-100 flex items-center justify-between text-xs text-[#062653]">
-              <div className="flex items-center gap-2.5">
-                <HelpCircle className="w-5 h-5 text-[#0866C9] shrink-0" />
-                <span>Ainda tem dúvidas? Fale agora com nossa equipe em Bebedouro.</span>
+            {/* ITEM 7: Box de Dúvidas / Contato Rápido com Visual Premium e Alto Destaque */}
+            <div className="p-6 rounded-2xl bg-gradient-to-r from-[#F3F6FD] to-white border border-[#0866C9]/20 shadow-md flex flex-col sm:flex-row items-center justify-between gap-5">
+              <div className="flex items-center gap-3.5">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#0866C9] to-[#08A9E6] text-white flex items-center justify-center shrink-0 shadow-sm">
+                  <HelpCircle className="w-6 h-6" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-bold text-[#062653]">Ainda tem alguma dúvida?</h4>
+                  <p className="text-xs text-[#596273]">Fale diretamente com nossos consultores em Bebedouro.</p>
+                </div>
               </div>
+              
               <a
                 href="tel:01733429191"
-                className="font-bold text-[#0866C9] hover:underline shrink-0"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[#0866C9] hover:bg-[#062653] text-white font-bold text-xs sm:text-sm shadow-md hover:shadow-lg transition-all duration-300 shrink-0 transform hover:-translate-y-0.5"
               >
-                (17) 3342-9191 &rarr;
+                <PhoneCall className="w-4 h-4 text-[#08A9E6]" />
+                <span>(17) 3342-9191</span>
+                <ArrowRight className="w-3.5 h-3.5" />
               </a>
             </div>
 

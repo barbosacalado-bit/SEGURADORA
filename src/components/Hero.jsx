@@ -1,5 +1,5 @@
 import React from 'react';
-import { ShieldCheck, ArrowRight, PhoneCall, Star, CheckCircle2 } from 'lucide-react';
+import { ShieldCheck, ArrowRight, PhoneCall, Star, CheckCircle2, Award, Headphones } from 'lucide-react';
 
 export default function Hero({ onOpenTelefones }) {
   return (
@@ -20,12 +20,12 @@ export default function Hero({ onOpenTelefones }) {
               Messa Corretora de Seguros • Bebedouro / SP
             </div>
 
-            {/* Título Principal (56–68px no desktop) */}
-            <h1 className="text-3xl sm:text-5xl lg:text-[58px] font-extrabold text-[#062653] leading-[1.12] tracking-tight">
-              Protegendo o que é <br className="hidden sm:inline" />
+            {/* ITEM 3: Título Principal voltado para 2027 com destaque premium */}
+            <h1 className="text-3xl sm:text-5xl lg:text-[56px] font-extrabold text-[#062653] leading-[1.14] tracking-tight">
+              Comece 2027 protegendo o que é <br className="hidden sm:inline" />
               <span className="text-[#0866C9] relative inline-block">
                 mais valioso
-                <svg className="absolute -bottom-2 left-0 w-full h-2.5 text-[#08A9E6]/40" viewBox="0 0 100 20" preserveAspectRatio="none">
+                <svg className="absolute -bottom-2 left-0 w-full h-2.5 text-[#08A9E6]/50" viewBox="0 0 100 20" preserveAspectRatio="none">
                   <path d="M0 15 Q 50 0 100 15" stroke="currentColor" strokeWidth="6" fill="transparent" />
                 </svg>
               </span> para você e sua família.
@@ -55,19 +55,55 @@ export default function Hero({ onOpenTelefones }) {
               </a>
             </div>
 
-            {/* Mini Atributos de Confiança */}
-            <div className="pt-4 border-t border-slate-100 flex flex-wrap items-center gap-6 text-xs text-[#596273] font-medium">
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-[#08A9E6]" />
-                <span>Atendimento Consultivo</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-[#08A9E6]" />
-                <span>As Melhores Seguradoras</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-[#08A9E6]" />
-                <span>Apoio Completo no Sinistro</span>
+            {/* ITEM 1: Badges de Confiança com Destaque Visual Premium */}
+            <div className="pt-6 border-t border-slate-200/80">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                
+                {/* Badge 1 */}
+                <div className="flex items-center gap-3 p-3 rounded-2xl bg-white shadow-xs border border-slate-200/90 hover:border-[#0866C9] hover:shadow-md transition-all duration-300 group">
+                  <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-[#0866C9] to-[#08A9E6] text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
+                    <ShieldCheck className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <p className="text-[12.5px] font-bold text-[#062653] leading-tight group-hover:text-[#0866C9] transition-colors">
+                      Atendimento Consultivo
+                    </p>
+                    <p className="text-[10px] text-[#596273] leading-tight mt-0.5">
+                      Bebedouro e região
+                    </p>
+                  </div>
+                </div>
+
+                {/* Badge 2 */}
+                <div className="flex items-center gap-3 p-3 rounded-2xl bg-white shadow-xs border border-slate-200/90 hover:border-[#0866C9] hover:shadow-md transition-all duration-300 group">
+                  <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-[#0866C9] to-[#08A9E6] text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
+                    <Award className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <p className="text-[12.5px] font-bold text-[#062653] leading-tight group-hover:text-[#0866C9] transition-colors">
+                      As Melhores Seguradoras
+                    </p>
+                    <p className="text-[10px] text-[#596273] leading-tight mt-0.5">
+                      Porto, Azul, Tokio & mais
+                    </p>
+                  </div>
+                </div>
+
+                {/* Badge 3 */}
+                <div className="flex items-center gap-3 p-3 rounded-2xl bg-white shadow-xs border border-slate-200/90 hover:border-[#0866C9] hover:shadow-md transition-all duration-300 group">
+                  <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-[#0866C9] to-[#08A9E6] text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
+                    <Headphones className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <p className="text-[12.5px] font-bold text-[#062653] leading-tight group-hover:text-[#0866C9] transition-colors">
+                      Apoio Total no Sinistro
+                    </p>
+                    <p className="text-[10px] text-[#596273] leading-tight mt-0.5">
+                      Suporte ágil e humanizado
+                    </p>
+                  </div>
+                </div>
+
               </div>
             </div>
 

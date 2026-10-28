@@ -10,6 +10,7 @@ import IndicadoresFaixa from './components/IndicadoresFaixa';
 import PilaresEquipe from './components/PilaresEquipe';
 import DepoimentoInstitucional from './components/DepoimentoInstitucional';
 import NoticiasDicas from './components/NoticiasDicas';
+import InstagramFeed from './components/InstagramFeed';
 import Footer from './components/Footer';
 import TelefonesModal from './components/TelefonesModal';
 import WhatsAppButton from './components/WhatsAppButton';
@@ -34,28 +35,28 @@ export default function App() {
       <Header onOpenTelefones={() => setTelefonesOpen(true)} />
 
       <main className="flex-grow">
-        {/* IMAGEM 01: Hero Principal com Composição Integrada e Alta Fidelidade */}
+        {/* IMAGEM 01: Hero Principal (Título 2027 + Badges com Destaque Premium) */}
         <Hero onOpenTelefones={() => setTelefonesOpen(true)} />
 
-        {/* IMAGEM 02: Seção de Diferenciais (4 Cards Horizontais com Numerações 01 a 04) */}
+        {/* IMAGEM 02: Seção de Diferenciais (Quebra de linha harmônica) */}
         <Diferenciais />
 
-        {/* IMAGEM 03: Apresentação Institucional Sobre a Messa (Fotos Sobrepostas + Selo Circular) */}
+        {/* IMAGEM 03: Apresentação Institucional Sobre a Messa (Fotos Locais Sem Falhas) */}
         <Sobre />
 
-        {/* IMAGEM 04: Serviços da Corretora (4 Cards Fotográficos com Ícones Sobrepostos) */}
+        {/* IMAGEM 04: Serviços da Corretora (Quebra de linha no título + Banner de Outras Modalidades Premium) */}
         <Servicos onSelectProduto={handleSelectProduto} />
 
         {/* IMAGEM 05: Seção Institucional em Azul Profundo (#062653) com Atributos Estruturados */}
         <SecaoDestaqueAzul />
 
-        {/* IMAGEM 06: Formulário de Cotação e FAQ Accordion Interativo */}
+        {/* IMAGEM 06: Formulário de Cotação e FAQ Accordion (Box de Dúvidas Premium) */}
         <FormularioFAQ produtoSelecionado={produtoSelecionado} />
 
         {/* IMAGEM 07: Faixa de Indicadores Institucionais (Fundo Azul com Círculos Azul-Ciano) */}
         <IndicadoresFaixa />
 
-        {/* IMAGEM 08: Consultoria e Atendimento Especializado (Pilares Dedicados) */}
+        {/* IMAGEM 08: Consultoria e Atendimento Especializado (Quebra de linha no título) */}
         <PilaresEquipe />
 
         {/* IMAGEM 09: Relação de Confiança (Fundo Suave, Aspas Azuis e Compromisso Institucional) */}
@@ -63,6 +64,9 @@ export default function App() {
 
         {/* IMAGEM 10: Notícias e Orientações aos Segurados (3 Cards com Leitura Interativa) */}
         <NoticiasDicas />
+
+        {/* NOVA SEÇÃO: Acompanhe Nosso Instagram (3 Posts com visual idêntico ao Instagram) */}
+        <InstagramFeed />
       </main>
 
       {/* IMAGEM 11: Rodapé Institucional em Azul Profundo (#062653) */}

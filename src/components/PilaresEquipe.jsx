@@ -38,8 +38,10 @@ export default function PilaresEquipe() {
           <span className="inline-block px-3.5 py-1 rounded-full bg-[#0866C9]/10 text-[#0866C9] text-xs font-bold uppercase tracking-wider">
             Consultoria Especializada
           </span>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-[#062653] tracking-tight">
-            Atendimento dedicado para cada necessidade
+          {/* ITEM 8: Quebra de linha exata com "para cada necessidade" na 2ª linha */}
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-[#062653] tracking-tight leading-tight">
+            Atendimento dedicado <br className="hidden sm:inline" />
+            para cada necessidade
           </h2>
           <p className="text-sm sm:text-base text-[#596273]">
             Nossos consultores na Messa Corretora orientam você com profundidade técnica em cada área de seguros.

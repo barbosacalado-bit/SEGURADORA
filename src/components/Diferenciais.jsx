@@ -38,8 +38,10 @@ export default function Diferenciais() {
           <span className="inline-block px-3.5 py-1 rounded-full bg-[#0866C9]/10 text-[#0866C9] text-xs font-bold uppercase tracking-wider">
             Por Que Escolher a Messa
           </span>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-[#062653] tracking-tight">
-            Diferenciais que garantem a sua total tranquilidade
+          {/* ITEM 2: Quebra de linha exata com a sua total tranquilidade na 2ª linha */}
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-[#062653] tracking-tight leading-tight">
+            Diferenciais que garantem <br className="hidden sm:inline" />
+            a sua total tranquilidade
           </h2>
           <p className="text-sm sm:text-base text-[#596273]">
             Mais do que vender seguros, entregamos proteção estratégica e suporte contínuo para o que você conquistou.

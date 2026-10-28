@@ -34,19 +34,25 @@ export default function Sobre() {
           <div className="lg:col-span-6 relative">
             <div className="relative mx-auto max-w-[500px] lg:max-w-none">
               
-              {/* Fotografia Principal (Atendimento Consultivo) */}
-              <div className="relative rounded-3xl overflow-hidden shadow-2xl w-[86%] sm:w-[82%] border-4 border-white">
+              {/* ITEM 4: Fotografia Principal com imagem local estável e de alta qualidade */}
+              <div className="relative rounded-3xl overflow-hidden shadow-2xl w-[86%] sm:w-[82%] border-4 border-white bg-slate-100">
                 <img
-                  src="https://images.unsplash.com/photo-1556742049-0a67c5574f73?q=80&w=1000&auto=format&fit=crop"
+                  src="/images/atendimento.jpg"
+                  onError={(e) => {
+                    e.currentTarget.src = "https://images.unsplash.com/photo-1521791136064-7986c2920216?q=80&w=1000&auto=format&fit=crop";
+                  }}
                   alt="Atendimento consultivo na Messa Corretora"
                   className="w-full h-[360px] sm:h-[440px] object-cover object-center"
                 />
               </div>
 
-              {/* Fotografia Secundária Parcialmente Sobreposta (Conquista e Patrimônio Seguro) */}
+              {/* Fotografia Secundária Parcialmente Sobreposta */}
               <div className="absolute -bottom-8 -right-2 sm:-right-4 w-[60%] sm:w-[58%] rounded-2xl overflow-hidden shadow-2xl border-4 border-white bg-white">
                 <img
-                  src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?q=80&w=800&auto=format&fit=crop"
+                  src="/images/patrimonio.jpg"
+                  onError={(e) => {
+                    e.currentTarget.src = "https://images.unsplash.com/photo-1560518883-ce09059eeffa?q=80&w=800&auto=format&fit=crop";
+                  }}
                   alt="Patrimônio seguro com a Messa Corretora"
                   className="w-full h-[220px] sm:h-[260px] object-cover object-center"
                 />

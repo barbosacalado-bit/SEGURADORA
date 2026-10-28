@@ -1,5 +1,5 @@
 import React from 'react';
-import { Car, Home, HeartPulse, Landmark, ArrowRight, ExternalLink } from 'lucide-react';
+import { Car, Home, HeartPulse, Landmark, ArrowRight, Wheat, Shield, HeartHandshake, Sparkles } from 'lucide-react';
 
 export default function Servicos({ onSelectProduto }) {
   const servicos = [
@@ -54,8 +54,10 @@ export default function Servicos({ onSelectProduto }) {
           <span className="inline-block px-3.5 py-1 rounded-full bg-[#0866C9]/10 text-[#0866C9] text-xs font-bold uppercase tracking-wider">
             Nossas Soluções
           </span>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-[#062653] tracking-tight">
-            Seguros e serviços planejados para você
+          {/* ITEM 5: Quebra exata com "planejados para você" na 2ª linha */}
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-[#062653] tracking-tight leading-tight">
+            Seguros e serviços <br className="hidden sm:inline" />
+            planejados para você
           </h2>
           <p className="text-sm sm:text-base text-[#596273]">
             Produtos estruturados sob medida com as melhores garantias do mercado securitário brasileiro.
@@ -139,20 +141,52 @@ export default function Servicos({ onSelectProduto }) {
           })}
         </div>
 
-        {/* Categorias adicionais mapeadas da Messa (Agronegócio, Previdência e Acidentes Pessoais) */}
-        <div className="mt-12 p-6 rounded-2xl bg-white border border-slate-200/80 shadow-xs flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="text-left">
-            <h4 className="text-base font-bold text-[#062653]">Procura outras modalidades de seguro?</h4>
-            <p className="text-xs sm:text-sm text-[#596273] mt-0.5">
-              Também cotamos <strong>Agronegócio</strong> (máquinas agrícolas, lavoura e rebanho), <strong>Previdência Privada</strong> e <strong>Acidentes Pessoais</strong>.
-            </p>
+        {/* ITEM 6: Banner de Outras Modalidades com Destaque Visual Premium */}
+        <div className="mt-14 relative rounded-3xl overflow-hidden shadow-xl bg-gradient-to-r from-[#062653] via-[#083b7e] to-[#0866C9] text-white p-7 sm:p-9 border border-white/15">
+          {/* Brilhos decorativos de fundo */}
+          <div className="absolute top-0 right-0 w-64 h-64 bg-[#08A9E6]/20 rounded-full blur-2xl pointer-events-none"></div>
+
+          <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+            <div className="space-y-3.5 text-left max-w-2xl">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-[#08A9E6] text-xs font-bold uppercase tracking-wider">
+                <Sparkles className="w-3.5 h-3.5" />
+                Soluções Sob Medida
+              </div>
+              <h3 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight">
+                Procura outras modalidades de seguro?
+              </h3>
+              <p className="text-xs sm:text-sm text-slate-200 leading-relaxed">
+                Além das coberturas tradicionais, oferecemos proteção estratégica e especializada em:
+              </p>
+
+              {/* 3 Pills de Modalidades */}
+              <div className="flex flex-wrap gap-2.5 pt-1">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 border border-white/15 text-xs text-white font-medium">
+                  <Wheat className="w-4 h-4 text-[#08A9E6]" />
+                  <strong>Agronegócio</strong> (máquinas, safra e rebanho)
+                </span>
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 border border-white/15 text-xs text-white font-medium">
+                  <Shield className="w-4 h-4 text-[#08A9E6]" />
+                  <strong>Previdência Privada</strong>
+                </span>
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 border border-white/15 text-xs text-white font-medium">
+                  <HeartHandshake className="w-4 h-4 text-[#08A9E6]" />
+                  <strong>Acidentes Pessoais</strong>
+                </span>
+              </div>
+            </div>
+
+            {/* Botão de Destaque Sólido Premium */}
+            <div className="shrink-0 flex items-center">
+              <a
+                href="#cotacao"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-7 py-4 rounded-xl bg-white hover:bg-[#F3F6FD] text-[#062653] font-bold text-sm shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-0.5 group"
+              >
+                <span>Fazer Cotação Especial</span>
+                <ArrowRight className="w-4 h-4 text-[#0866C9] group-hover:translate-x-1 transition-transform" />
+              </a>
+            </div>
           </div>
-          <a
-            href="#cotacao"
-            className="shrink-0 px-6 py-2.5 rounded-xl bg-white border border-[#0866C9] text-[#0866C9] hover:bg-[#0866C9] hover:text-white font-semibold text-xs sm:text-sm transition-all"
-          >
-            Fazer Cotação Especial
-          </a>
         </div>
 
       </div>
