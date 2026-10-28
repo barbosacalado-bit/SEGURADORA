@@ -159,20 +159,49 @@ export default function Servicos({ onSelectProduto }) {
                 Além das coberturas tradicionais, oferecemos proteção estratégica e especializada em:
               </p>
 
-              {/* 3 Pills de Modalidades */}
-              <div className="flex flex-wrap gap-2.5 pt-1">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 border border-white/15 text-xs text-white font-medium">
-                  <Wheat className="w-4 h-4 text-[#08A9E6]" />
-                  <strong>Agronegócio</strong> (máquinas, safra e rebanho)
-                </span>
-                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 border border-white/15 text-xs text-white font-medium">
-                  <Shield className="w-4 h-4 text-[#08A9E6]" />
-                  <strong>Previdência Privada</strong>
-                </span>
-                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 border border-white/15 text-xs text-white font-medium">
-                  <HeartHandshake className="w-4 h-4 text-[#08A9E6]" />
-                  <strong>Acidentes Pessoais</strong>
-                </span>
+              {/* 3 Cards de Modalidades Maiores com Alto Destaque */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 pt-2">
+                <div className="flex items-center gap-3.5 p-3.5 sm:px-4 sm:py-3.5 rounded-2xl bg-white/15 backdrop-blur-md border border-white/25 hover:border-[#08A9E6] hover:bg-white/20 transition-all duration-300 shadow-sm group">
+                  <div className="w-12 h-12 rounded-xl bg-white/20 text-[#08A9E6] flex items-center justify-center shrink-0 shadow-xs group-hover:scale-110 transition-transform">
+                    <Wheat className="w-6 h-6" />
+                  </div>
+                  <div className="text-left">
+                    <span className="text-sm sm:text-[15px] font-extrabold text-white block leading-tight">
+                      Agronegócio
+                    </span>
+                    <span className="text-[11.5px] text-blue-100 font-medium leading-tight block mt-0.5">
+                      Máquinas, safra e rebanho
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3.5 p-3.5 sm:px-4 sm:py-3.5 rounded-2xl bg-white/15 backdrop-blur-md border border-white/25 hover:border-[#08A9E6] hover:bg-white/20 transition-all duration-300 shadow-sm group">
+                  <div className="w-12 h-12 rounded-xl bg-white/20 text-[#08A9E6] flex items-center justify-center shrink-0 shadow-xs group-hover:scale-110 transition-transform">
+                    <Shield className="w-6 h-6" />
+                  </div>
+                  <div className="text-left">
+                    <span className="text-sm sm:text-[15px] font-extrabold text-white block leading-tight">
+                      Previdência Privada
+                    </span>
+                    <span className="text-[11.5px] text-blue-100 font-medium leading-tight block mt-0.5">
+                      Planejamento do futuro
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3.5 p-3.5 sm:px-4 sm:py-3.5 rounded-2xl bg-white/15 backdrop-blur-md border border-white/25 hover:border-[#08A9E6] hover:bg-white/20 transition-all duration-300 shadow-sm group">
+                  <div className="w-12 h-12 rounded-xl bg-white/20 text-[#08A9E6] flex items-center justify-center shrink-0 shadow-xs group-hover:scale-110 transition-transform">
+                    <HeartHandshake className="w-6 h-6" />
+                  </div>
+                  <div className="text-left">
+                    <span className="text-sm sm:text-[15px] font-extrabold text-white block leading-tight">
+                      Acidentes Pessoais
+                    </span>
+                    <span className="text-[11.5px] text-blue-100 font-medium leading-tight block mt-0.5">
+                      Proteção individual ou equipe
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
 
