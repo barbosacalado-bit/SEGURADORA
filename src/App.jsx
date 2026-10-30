@@ -14,25 +14,36 @@ import InstagramFeed from './components/InstagramFeed';
 import Footer from './components/Footer';
 import TelefonesModal from './components/TelefonesModal';
 import WhatsAppButton from './components/WhatsAppButton';
+import CentralAtendimento from './components/CentralAtendimento';
 
 export default function App() {
   const [telefonesOpen, setTelefonesOpen] = useState(false);
   const [produtoSelecionado, setProdutoSelecionado] = useState(null);
+  const [exibirCentralAtendimento, setExibirCentralAtendimento] = useState(false);
 
   const handleSelectProduto = (produto) => {
     setProdutoSelecionado(produto);
-    // Rolagem suave até o formulário de cotação
     const el = document.getElementById('cotacao');
     if (el) {
       el.scrollIntoView({ behavior: 'smooth' });
     }
   };
 
+  // Se o usuário alternar para o Painel da Central de Atendimento
+  if (exibirCentralAtendimento) {
+    return (
+      <CentralAtendimento onVoltarSite={() => setExibirCentralAtendimento(false)} />
+    );
+  }
+
   return (
     <div className="min-h-screen flex flex-col bg-white text-[#596273] font-['Poppins',sans-serif] selection:bg-[#0866C9] selection:text-white">
       
       {/* 01. Cabeçalho Horizontal & Navegação Institucional */}
-      <Header onOpenTelefones={() => setTelefonesOpen(true)} />
+      <Header 
+        onOpenTelefones={() => setTelefonesOpen(true)} 
+        onOpenCentral={() => setExibirCentralAtendimento(true)}
+      />
 
       <main className="flex-grow">
         {/* IMAGEM 01: Hero Principal (Título 2027 + Badges com Destaque Premium) */}
@@ -51,7 +62,10 @@ export default function App() {
         <SecaoDestaqueAzul />
 
         {/* IMAGEM 06: Formulário de Cotação e FAQ Accordion (Box de Dúvidas Premium) */}
-        <FormularioFAQ produtoSelecionado={produtoSelecionado} />
+        <FormularioFAQ 
+          produtoSelecionado={produtoSelecionado} 
+          onAbrirCentral={() => setExibirCentralAtendimento(true)}
+        />
 
         {/* IMAGEM 07: Faixa de Indicadores Institucionais (Fundo Azul com Círculos Azul-Ciano) */}
         <IndicadoresFaixa />

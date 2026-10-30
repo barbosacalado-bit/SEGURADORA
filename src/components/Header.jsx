@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import Logo from './Logo';
-import { Phone, Mail, MapPin, Clock, Menu, X, ChevronRight, Headphones } from 'lucide-react';
+import { Phone, Mail, MapPin, Clock, Menu, X, ChevronRight, Headphones, MessageSquare } from 'lucide-react';
 
-export default function Header({ onOpenTelefones }) {
+export default function Header({ onOpenTelefones, onOpenCentral }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navLinks = [
@@ -81,7 +81,18 @@ export default function Header({ onOpenTelefones }) {
         </nav>
 
         {/* Action Button */}
-        <div className="hidden sm:flex items-center gap-3">
+        <div className="hidden sm:flex items-center gap-2.5">
+          {onOpenCentral && (
+            <button
+              onClick={onOpenCentral}
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-blue-50 text-[#062653] hover:text-[#0866C9] text-[13px] font-semibold border border-slate-200 transition-all"
+              title="Acessar Central de Atendimento das Funcionárias"
+            >
+              <MessageSquare className="w-3.5 h-3.5 text-[#0866C9]" />
+              <span>Painel Atendimento</span>
+            </button>
+          )}
+
           <a
             href="#cotacao"
             className="px-5 py-2.5 rounded-xl bg-[#0866C9] hover:bg-[#062653] text-white text-[14px] font-semibold tracking-wide shadow-sm hover:shadow-md transition-all duration-300 transform hover:-translate-y-0.5"

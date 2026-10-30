@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
-import { Send, ChevronDown, CheckCircle, HelpCircle, PhoneCall, ArrowRight } from 'lucide-react';
+import { Send, ChevronDown, CheckCircle, HelpCircle, PhoneCall, ArrowRight, MessageSquare } from 'lucide-react';
+import { criarNovoLeadFormulario, obterAtendentePorModalidade } from '../services/atendimentoService';
 
-export default function FormularioFAQ({ produtoSelecionado }) {
+export default function FormularioFAQ({ produtoSelecionado, onAbrirCentral }) {
   const [formData, setFormData] = useState({
     nome: '',
     telefone: '',
     email: '',
-    categoria: produtoSelecionado || 'Seguro de Veículos',
+    categoria: produtoSelecionado || 'Seguro de Veículos (Auto, Sênior, Jovem, Táxi)',
     mensagem: ''
   });
 
   const [enviado, setEnviado] = useState(false);
+  const [leadAtribuido, setLeadAtribuido] = useState(null);
   const [activeFaq, setActiveFaq] = useState(0);
 
   const faqs = [
@@ -38,6 +40,18 @@ export default function FormularioFAQ({ produtoSelecionado }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    
+    // Roteia automaticamente para a especialista correspondente com card do avatar
+    const novoLead = criarNovoLeadFormulario({
+      nome: formData.nome,
+      telefone: formData.telefone,
+      email: formData.email,
+      categoria: formData.categoria,
+      mensagem: formData.mensagem
+    });
+
+    const atendente = obterAtendentePorModalidade(formData.categoria);
+    setLeadAtribuido(atendente);
     setEnviado(true);
   };
 
@@ -76,17 +90,48 @@ export default function FormularioFAQ({ produtoSelecionado }) {
                 <div className="w-14 h-14 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto">
                   <CheckCircle className="w-8 h-8" />
                 </div>
-                <h4 className="text-lg font-bold text-emerald-900">Solicitação Registrada com Sucesso!</h4>
+                <h4 className="text-lg font-bold text-emerald-900">Solicitação Direcionada com Sucesso!</h4>
+                
+                {leadAtribuido && (
+                  <div className="bg-white p-3 rounded-xl border border-emerald-100 flex items-center gap-3 text-left max-w-sm mx-auto shadow-sm">
+                    <img 
+                      src={leadAtribuido.avatar} 
+                      alt={leadAtribuido.nome} 
+                      className="w-12 h-12 rounded-full object-cover border border-emerald-300"
+                    />
+                    <div>
+                      <span className="text-[10px] text-emerald-700 font-bold uppercase tracking-wider block">Especialista Atribuída</span>
+                      <p className="text-xs font-bold text-[#062653]">{leadAtribuido.nome}</p>
+                      <p className="text-[10px] text-[#0866C9]">{leadAtribuido.cargo}</p>
+                    </div>
+                  </div>
+                )}
+
                 <p className="text-xs sm:text-sm text-emerald-700 leading-relaxed">
-                  Obrigado, <strong>{formData.nome}</strong>. Nossos consultores da Messa Corretora já receberam seus dados e estão calculando as melhores opções.
+                  Obrigado, <strong>{formData.nome}</strong>. Sua solicitação de <strong>{formData.categoria}</strong> já foi entregue diretamente na mesa de atendimento da <strong>{leadAtribuido?.nome}</strong>.
                 </p>
-                <button
-                  type="button"
-                  onClick={enviarWhatsAppDireto}
-                  className="w-full py-3 px-4 bg-[#25D366] hover:bg-[#20bd5a] text-white font-semibold rounded-xl text-sm transition-colors shadow-sm"
-                >
-                  Agilizar Atendimento via WhatsApp Agora &rarr;
-                </button>
+
+                <div className="pt-2 flex flex-col sm:flex-row gap-2">
+                  <button
+                    type="button"
+                    onClick={enviarWhatsAppDireto}
+                    className="flex-1 py-3 px-4 bg-[#25D366] hover:bg-[#20bd5a] text-white font-semibold rounded-xl text-xs transition-colors shadow-sm flex items-center justify-center gap-1.5"
+                  >
+                    <span>Falar no WhatsApp Agora &rarr;</span>
+                  </button>
+                  
+                  {onAbrirCentral && (
+                    <button
+                      type="button"
+                      onClick={onAbrirCentral}
+                      className="flex-1 py-3 px-4 bg-[#0866C9] hover:bg-[#062653] text-white font-semibold rounded-xl text-xs transition-colors shadow-sm flex items-center justify-center gap-1.5"
+                    >
+                      <MessageSquare className="w-3.5 h-3.5" />
+                      <span>Ver Painel da Atendente</span>
+                    </button>
+                  )}
+                </div>
+
                 <button
                   type="button"
                   onClick={() => setEnviado(false)}
