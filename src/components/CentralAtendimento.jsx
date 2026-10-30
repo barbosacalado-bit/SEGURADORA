@@ -37,6 +37,39 @@ export default function CentralAtendimento({ onVoltarSite }) {
   const [atendimentoSelecionadoId, setAtendimentoSelecionadoId] = useState(null);
   const [textoMensagem, setTextoMensagem] = useState('');
   
+  // Status da Conexão Real com o WhatsApp via Gateway Baileys
+  const [gatewayStatus, setGatewayStatus] = useState({
+    status: 'VERIFICANDO',
+    phone: null,
+    qrCode: null
+  });
+  const [modalQrCodeOpen, setModalQrCodeOpen] = useState(false);
+
+  // Consulta o Gateway a cada 3 segundos para sincronizar o status
+  useEffect(() => {
+    const checarStatus = async () => {
+      try {
+        const url = window.location.hostname === 'localhost' 
+          ? 'http://localhost:3001/status' 
+          : 'https://large-teeth-live.loca.lt/status';
+
+        const res = await fetch(url, {
+          headers: { 'bypass-tunnel-reminder': 'true' }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setGatewayStatus(data);
+        }
+      } catch (e) {
+        // Gateway ainda iniciando ou offline
+      }
+    };
+
+    checarStatus();
+    const interval = setInterval(checarStatus, 3000);
+    return () => clearInterval(interval);
+  }, []);
+  
   // Controle de Abas: 'ativas' (Mesa Limpa) vs 'historico' (Arquivo/Pesquisa)
   const [abaAtual, setAbaAtual] = useState('ativas'); 
   const [termoBusca, setTermoBusca] = useState('');
@@ -102,13 +135,35 @@ export default function CentralAtendimento({ onVoltarSite }) {
   // Atendimento atualmente aberto na coluna central
   const atendimentoAtivo = atendimentos.find(a => a.id === atendimentoSelecionadoId) || null;
 
-  // Envio de nova mensagem pela atendente
-  const handleEnviarMensagem = (e) => {
+  // Envio de nova mensagem pela atendente (Plugado no WhatsApp Real)
+  const handleEnviarMensagem = async (e) => {
     e.preventDefault();
     if (!textoMensagem.trim() || !atendimentoAtivo) return;
 
+    const textoFormatado = `[${atendenteAtual.nome} - Messa Corretora]:\n${textoMensagem.trim()}`;
     const agora = new Date();
     const hora = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+
+    // Dispara via WhatsApp Real através do nosso Gateway Baileys
+    try {
+      const endpoint = window.location.hostname === 'localhost' 
+        ? 'http://localhost:3001/send-message' 
+        : 'https://large-teeth-live.loca.lt/send-message';
+
+      fetch(endpoint, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'bypass-tunnel-reminder': 'true'
+        },
+        body: JSON.stringify({
+          phone: atendimentoAtivo.cliente.telefone,
+          text: textoFormatado
+        })
+      }).catch(err => console.log('Envio WhatsApp local/background:', err));
+    } catch (err) {
+      console.error('Erro ao conectar ao gateway:', err);
+    }
 
     const novaMsg = {
       id: 'msg-' + Date.now(),
@@ -301,14 +356,36 @@ export default function CentralAtendimento({ onVoltarSite }) {
           </div>
         </div>
 
-        {/* Botão de Retornar ao Site Institucional */}
-        <button
-          onClick={onVoltarSite}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium text-blue-100 hover:text-white hover:bg-white/10 transition-colors border border-white/10"
-        >
-          <LogOut className="w-3.5 h-3.5" />
-          <span>Ver Site</span>
-        </button>
+        {/* CONEXÃO COM O WHATSAPP REAL */}
+        <div className="flex items-center gap-2">
+          {gatewayStatus.status === 'CONNECTED' ? (
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-500/20 border border-emerald-400/40 text-emerald-200 text-xs">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span className="font-semibold text-emerald-100">WhatsApp Conectado</span>
+              {gatewayStatus.phone && (
+                <span className="text-[10px] text-emerald-300">({gatewayStatus.phone})</span>
+              )}
+            </div>
+          ) : (
+            <button
+              onClick={() => setModalQrCodeOpen(true)}
+              className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/40 text-amber-200 text-xs font-semibold transition-all shadow-sm"
+              title="Clique para ler o QR Code e conectar seu WhatsApp"
+            >
+              <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+              <span>Conectar WhatsApp (QR Code)</span>
+            </button>
+          )}
+
+          {/* Botão de Retornar ao Site Institucional */}
+          <button
+            onClick={onVoltarSite}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium text-blue-100 hover:text-white hover:bg-white/10 transition-colors border border-white/10"
+          >
+            <LogOut className="w-3.5 h-3.5" />
+            <span>Ver Site</span>
+          </button>
+        </div>
       </header>
 
       {/* ÁREA DE TRABALHO DA ATENDENTE (3 COLUNAS HARMONIOSAS) */}
@@ -814,6 +891,65 @@ export default function CentralAtendimento({ onVoltarSite }) {
                 Confirmar Transferência
               </button>
             </div>
+
+          </div>
+        </div>
+      )}
+
+      {/* ================= MODAL: LEITURA DO QR CODE DO WHATSAPP ================= */}
+      {modalQrCodeOpen && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl text-center space-y-4 border border-slate-100">
+            
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div className="flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></span>
+                <h3 className="font-bold text-sm text-[#062653]">Conectar WhatsApp</h3>
+              </div>
+              <button 
+                onClick={() => setModalQrCodeOpen(false)}
+                className="text-slate-400 hover:text-slate-600"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <p className="text-xs text-slate-500 leading-relaxed">
+              Abra o WhatsApp no seu celular, vá em <strong>Aparelhos Conectados</strong> e aponte a câmera para o QR Code abaixo:
+            </p>
+
+            {/* Imagem do QR Code Gerada pelo Gateway */}
+            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 inline-block mx-auto shadow-inner">
+              {gatewayStatus.qrCode ? (
+                <img 
+                  src={gatewayStatus.qrCode} 
+                  alt="QR Code WhatsApp" 
+                  className="w-56 h-56 mx-auto rounded-lg"
+                />
+              ) : gatewayStatus.status === 'CONNECTED' ? (
+                <div className="py-12 text-center text-emerald-600 space-y-2">
+                  <CheckCheck className="w-12 h-12 mx-auto" />
+                  <p className="text-xs font-bold">WhatsApp já está Conectado!</p>
+                </div>
+              ) : (
+                <div className="py-16 text-center text-slate-400 space-y-2">
+                  <div className="w-8 h-8 border-2 border-[#0866C9] border-t-transparent rounded-full animate-spin mx-auto"></div>
+                  <p className="text-xs">Gerando QR Code...</p>
+                </div>
+              )}
+            </div>
+
+            <p className="text-[11px] text-slate-400">
+              {gatewayStatus.status === 'CONNECTED' ? '🟢 Conectado com Sucesso' : '🟡 Aguardando leitura no celular...'}
+            </p>
+
+            <button
+              type="button"
+              onClick={() => setModalQrCodeOpen(false)}
+              className="w-full py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-[#062653] font-semibold text-xs transition-colors"
+            >
+              Fechar
+            </button>
 
           </div>
         </div>

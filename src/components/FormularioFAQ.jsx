@@ -53,6 +53,28 @@ export default function FormularioFAQ({ produtoSelecionado, onAbrirCentral }) {
     const atendente = obterAtendentePorModalidade(formData.categoria);
     setLeadAtribuido(atendente);
     setEnviado(true);
+
+    // Dispara a mensagem oficial de boas-vindas da especialista direto no WhatsApp do cliente
+    try {
+      const endpoint = window.location.hostname === 'localhost' 
+        ? 'http://localhost:3001/send-message' 
+        : 'https://large-teeth-live.loca.lt/send-message';
+
+      const textoBoasVindas = `[${atendente.nome} - Messa Corretora]:\n${atendente.apresentacaoTexto}`;
+      fetch(endpoint, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'bypass-tunnel-reminder': 'true'
+        },
+        body: JSON.stringify({
+          phone: formData.telefone,
+          text: textoBoasVindas
+        })
+      }).catch(err => console.log('Envio WhatsApp local/background:', err));
+    } catch (e) {
+      console.error('Erro ao acionar gateway WhatsApp:', e);
+    }
   };
 
   const enviarWhatsAppDireto = () => {
