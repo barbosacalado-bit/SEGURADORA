@@ -321,32 +321,32 @@ export default function CentralAtendimento({ onVoltarSite }) {
         </div>
 
         {/* SELETOR DE LOGIN (Para alternar entre Kamila, Bia, Amanda e Júnior nas abas do Chrome/Firefox) */}
-        <div className="flex items-center gap-3 bg-white/10 p-1.5 rounded-2xl border border-white/10">
-          <div className="flex items-center gap-2 px-2">
+        <div className="flex items-center gap-3 bg-white/10 p-2 rounded-2xl border border-white/10">
+          <div className="flex items-center gap-3 px-2">
             <img 
               src={atendenteAtual.avatar} 
               alt={atendenteAtual.nome} 
-              className="w-8 h-8 rounded-full object-cover border-2 border-white shadow"
+              className="w-11 h-11 rounded-full object-cover border-2 border-white shadow-md ring-2 ring-white/20"
             />
             <div className="text-left hidden md:block">
-              <p className="text-xs font-semibold text-white leading-tight">{atendenteAtual.nome}</p>
-              <p className="text-[10px] text-blue-200">{atendenteAtual.cargo}</p>
+              <p className="text-sm font-bold text-white leading-tight">{atendenteAtual.nome}</p>
+              <p className="text-xs text-blue-200">{atendenteAtual.cargo}</p>
             </div>
           </div>
 
-          <div className="h-6 w-[1px] bg-white/20"></div>
+          <div className="h-8 w-[1px] bg-white/20"></div>
 
           {/* Troca Rápida de Atendente */}
-          <div className="flex items-center gap-1">
-            <span className="text-[11px] text-blue-200 hidden lg:inline mr-1">Operar como:</span>
+          <div className="flex items-center gap-1.5">
+            <span className="text-xs text-blue-200 hidden lg:inline mr-1 font-medium">Operar como:</span>
             {ATENDENTES.map((at) => (
               <button
                 key={at.id}
                 onClick={() => handleTrocarAtendente(at.id)}
-                className={`px-2.5 py-1 text-xs rounded-xl font-medium transition-all ${
+                className={`px-3.5 py-1.5 text-xs sm:text-sm rounded-xl font-semibold transition-all ${
                   atendenteAtualId === at.id 
-                    ? 'bg-[#0866C9] text-white shadow-sm ring-2 ring-white/30' 
-                    : 'text-blue-100 hover:bg-white/10'
+                    ? 'bg-[#0866C9] text-white shadow-md ring-2 ring-white/40 scale-105' 
+                    : 'text-blue-100 hover:bg-white/15'
                 }`}
                 title={`${at.nome} - ${at.cargo}`}
               >
@@ -637,27 +637,27 @@ export default function CentralAtendimento({ onVoltarSite }) {
                   if (msg.tipo === 'apresentacao_card') {
                     return (
                       <div key={msg.id} className="flex justify-end">
-                        <div className="max-w-md bg-white border border-[#0866C9]/20 rounded-2xl p-3.5 shadow-md space-y-3">
-                          <div className="flex items-center gap-3 bg-gradient-to-r from-blue-50 to-indigo-50 p-2.5 rounded-xl border border-blue-100">
+                        <div className="max-w-lg bg-white border border-[#0866C9]/25 rounded-3xl p-4 sm:p-5 shadow-lg space-y-3.5">
+                          <div className="flex items-center gap-3.5 bg-gradient-to-r from-blue-50/90 via-indigo-50/70 to-blue-50/50 p-3 rounded-2xl border border-blue-100">
                             <img 
                               src={msg.avatar} 
                               alt={msg.nome} 
-                              className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm"
+                              className="w-16 h-16 rounded-full object-cover border-2 border-white shadow-md ring-2 ring-[#0866C9]/20"
                             />
                             <div>
-                              <p className="font-bold text-xs text-[#062653]">{msg.nome}</p>
-                              <p className="text-[10px] text-[#0866C9] font-medium">{msg.cargo}</p>
-                              <p className="text-[9px] text-slate-500">Messa Corretora de Seguros</p>
+                              <p className="font-bold text-sm sm:text-base text-[#062653]">{msg.nome}</p>
+                              <p className="text-xs sm:text-[13px] text-[#0866C9] font-semibold">{msg.cargo}</p>
+                              <p className="text-[11px] text-slate-500 font-medium">Messa Corretora de Seguros • Bebedouro/SP</p>
                             </div>
                           </div>
                           
-                          <p className="text-xs text-slate-700 leading-relaxed whitespace-pre-line">
+                          <p className="text-xs sm:text-sm text-slate-700 leading-relaxed whitespace-pre-line font-normal">
                             {msg.texto}
                           </p>
 
-                          <div className="flex items-center justify-end gap-1 text-[10px] text-slate-400 pt-1">
+                          <div className="flex items-center justify-end gap-1.5 text-[11px] text-slate-400 pt-1">
                             <span>{msg.horario}</span>
-                            <CheckCheck className="w-3 h-3 text-[#0866C9]" />
+                            <CheckCheck className="w-3.5 h-3.5 text-[#0866C9]" />
                           </div>
                         </div>
                       </div>
@@ -793,17 +793,17 @@ export default function CentralAtendimento({ onVoltarSite }) {
             </div>
 
             {/* Atendente Responsável Atual */}
-            <div className="mt-auto pt-3 border-t border-slate-100">
-              <span className="text-[10px] text-slate-400 font-semibold block mb-2">RESPONSÁVEL PELO ATENDIMENTO</span>
-              <div className="flex items-center gap-2.5">
+            <div className="mt-auto pt-4 border-t border-slate-100">
+              <span className="text-[11px] text-slate-400 font-bold block mb-2 tracking-wider">RESPONSÁVEL PELO ATENDIMENTO</span>
+              <div className="flex items-center gap-3 bg-slate-50 p-2.5 rounded-2xl border border-slate-100">
                 <img 
                   src={atendenteAtual.avatar} 
                   alt={atendenteAtual.nome} 
-                  className="w-9 h-9 rounded-full object-cover border border-slate-200 shadow-sm"
+                  className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm ring-1 ring-[#0866C9]/20"
                 />
                 <div>
-                  <p className="text-xs font-bold text-[#062653]">{atendenteAtual.nome}</p>
-                  <p className="text-[10px] text-slate-500">{atendenteAtual.cargo}</p>
+                  <p className="text-sm font-bold text-[#062653]">{atendenteAtual.nome}</p>
+                  <p className="text-xs text-[#0866C9] font-medium">{atendenteAtual.cargo}</p>
                 </div>
               </div>
             </div>
