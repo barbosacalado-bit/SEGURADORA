@@ -6,7 +6,7 @@ export const ATENDENTES = [
     nome: 'Kamila Araújo',
     cargo: 'Consultora de Seguros Pessoais',
     idade: '30 anos',
-    avatar: '/avatars/kamila.jpg',
+    avatar: '/avatars/kamila_oficial.jpg',
     online: true,
     corBadge: 'bg-blue-100 text-[#0866C9] border-blue-200',
     modalidades: [
@@ -20,7 +20,7 @@ export const ATENDENTES = [
     nome: 'Bia Calado',
     cargo: 'Especialista Patrimonial & Agro',
     idade: '21 anos',
-    avatar: '/avatars/bia.jpg',
+    avatar: '/avatars/bia_oficial.jpg',
     online: true,
     corBadge: 'bg-emerald-100 text-emerald-800 border-emerald-200',
     modalidades: [
@@ -34,7 +34,7 @@ export const ATENDENTES = [
     nome: 'Amanda Campelo',
     cargo: 'Consultora Financeira & Investimentos',
     idade: '30 anos',
-    avatar: '/avatars/amanda.jpg',
+    avatar: '/avatars/amanda_oficial.jpg',
     online: true,
     corBadge: 'bg-amber-100 text-amber-800 border-amber-200',
     modalidades: [
@@ -48,7 +48,7 @@ export const ATENDENTES = [
     nome: 'Júnior Calado',
     cargo: 'Consultor Sênior Empresarial & Frotas',
     idade: '57 anos',
-    avatar: '/avatars/junior.jpg',
+    avatar: '/avatars/junior_oficial.jpg',
     online: true,
     corBadge: 'bg-indigo-100 text-indigo-800 border-indigo-200',
     modalidades: [
@@ -107,7 +107,7 @@ export function carregarAtendimentos() {
               remetente: 'atendente',
               atendenteId: 'kamila',
               tipo: 'apresentacao_card',
-              avatar: '/avatars/kamila.jpg',
+              avatar: '/avatars/kamila_oficial.jpg',
               nome: 'Kamila Araújo',
               cargo: 'Consultora de Seguros Pessoais',
               texto: 'Olá! Sou a Kamila Araújo, consultora especialista em Seguros de Veículos e Vida aqui na Messa Corretora. Recebi sua solicitação direto do nosso site e já estou separando as melhores opções para o seu perfil. Como posso te ajudar hoje?',
@@ -149,7 +149,27 @@ export function carregarAtendimentos() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(iniciais));
       return iniciais;
     }
-    return JSON.parse(data);
+    const lista = JSON.parse(data);
+    // Atualização forçada para garantir que todos os leads em tela usem os avatares reais oficiais
+    return lista.map(at => ({
+      ...at,
+      mensagens: (at.mensagens || []).map(m => {
+        if (m.tipo === 'apresentacao_card') {
+          const atCard = ATENDENTES.find(a => a.id === m.atendenteId || a.nome?.toLowerCase() === m.nome?.toLowerCase());
+          return atCard ? { ...m, avatar: atCard.avatar, nome: atCard.nome, cargo: atCard.cargo } : m;
+        }
+        if (m.tipo === 'transferencia_passagem') {
+          const de = ATENDENTES.find(a => a.id === m.deAtendente?.id || a.nome?.toLowerCase() === m.deAtendente?.nome?.toLowerCase());
+          const para = ATENDENTES.find(a => a.id === m.paraAtendente?.id || a.nome?.toLowerCase() === m.paraAtendente?.nome?.toLowerCase());
+          return {
+            ...m,
+            deAtendente: de ? { ...m.deAtendente, avatar: de.avatar } : m.deAtendente,
+            paraAtendente: para ? { ...m.paraAtendente, avatar: para.avatar } : m.paraAtendente
+          };
+        }
+        return m;
+      })
+    }));
   } catch (err) {
     console.error('Erro ao ler atendimentos:', err);
     return [];

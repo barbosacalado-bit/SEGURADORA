@@ -655,11 +655,11 @@ export default function CentralAtendimento({ onVoltarSite }) {
                       if (match) {
                         const nomeDe = match[1].trim();
                         const nomePara = match[2].trim();
-                        de = ATENDENTES.find(a => a.nome.toLowerCase() === nomeDe.toLowerCase()) || { nome: nomeDe, cargo: 'Consultora de Seguros', avatar: '/avatars/bia.jpg' };
-                        para = ATENDENTES.find(a => a.nome.toLowerCase() === nomePara.toLowerCase()) || { nome: nomePara, cargo: 'Especialista Messa', avatar: '/avatars/amanda.jpg' };
+                        de = ATENDENTES.find(a => a.nome.toLowerCase() === nomeDe.toLowerCase()) || { nome: nomeDe, cargo: 'Consultora de Seguros', avatar: '/avatars/bia_oficial.jpg' };
+                        para = ATENDENTES.find(a => a.nome.toLowerCase() === nomePara.toLowerCase()) || { nome: nomePara, cargo: 'Especialista Messa', avatar: '/avatars/amanda_oficial.jpg' };
                       } else {
-                        de = { nome: 'Atendente Anterior', cargo: 'Consultora', avatar: '/avatars/bia.jpg' };
-                        para = { nome: 'Nova Atendente', cargo: 'Especialista', avatar: '/avatars/amanda.jpg' };
+                        de = { nome: 'Atendente Anterior', cargo: 'Consultora', avatar: '/avatars/bia_oficial.jpg' };
+                        para = { nome: 'Nova Atendente', cargo: 'Especialista', avatar: '/avatars/amanda_oficial.jpg' };
                       }
                     }
 
@@ -800,7 +800,7 @@ export default function CentralAtendimento({ onVoltarSite }) {
 
                           <div className="flex items-center gap-3.5 bg-gradient-to-r from-blue-50/90 via-indigo-50/70 to-blue-50/50 p-3.5 rounded-2xl border border-blue-100">
                             <img 
-                              src={msg.avatar} 
+                              src={ATENDENTES.find(a => a.id === msg.atendenteId || a.nome?.toLowerCase() === msg.nome?.toLowerCase())?.avatar || msg.avatar} 
                               alt={msg.nome} 
                               className="w-16 h-16 rounded-full object-cover border-2 border-white shadow-md ring-2 ring-[#0866C9]/20 shrink-0"
                             />
