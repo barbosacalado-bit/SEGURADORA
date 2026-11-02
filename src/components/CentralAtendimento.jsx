@@ -219,17 +219,50 @@ export default function CentralAtendimento({ onVoltarSite }) {
     setAtendimentos(listaAtualizada);
   };
 
-  // Finalizar atendimento -> SOME DA GRID DE TRABALHO
+  // Finalizar atendimento -> Dispara mensagem de despedida ao cliente e move para histórico
   const handleFinalizarAtendimento = () => {
     if (!atendimentoAtivo) return;
     const agora = new Date();
     const hora = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    const primeiroNome = atendimentoAtivo.cliente?.nome ? atendimentoAtivo.cliente.nome.split(' ')[0] : 'Cliente';
+    const titular = atendenteTitular || atendenteAtual;
 
+    // 1. Mensagem compacta de finalização enviada ao cliente
+    const textoDespedida = `Olá, ${primeiroNome}! Agradecemos o seu contato. O seu atendimento foi finalizado por aqui, mas continuamos à sua inteira disposição sempre que precisar. Tenha um ótimo dia! 🤝\n\n— ${titular.nome} • Messa Corretora (Protocolo: ${atendimentoAtivo.protocolo})`;
+
+    const msgDespedida = {
+      id: 'msg-fim-' + Date.now(),
+      remetente: 'atendente',
+      atendenteId: titular.id,
+      texto: textoDespedida,
+      horario: hora
+    };
+
+    // Dispara no WhatsApp Real através do nosso Gateway Baileys / Z-API
+    try {
+      const endpoint = window.location.hostname === 'localhost' 
+        ? 'http://localhost:3001/send-message' 
+        : 'https://large-teeth-live.loca.lt/send-message';
+
+      fetch(endpoint, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'bypass-tunnel-reminder': 'true'
+        },
+        body: JSON.stringify({
+          phone: atendimentoAtivo.cliente.telefone,
+          message: textoDespedida
+        })
+      }).catch(() => {});
+    } catch (e) {}
+
+    // 2. Evento interno de encerramento do sistema
     const eventoFechamento = {
-      id: 'msg-' + Date.now(),
+      id: 'msg-ev-' + (Date.now() + 1),
       remetente: 'sistema',
       tipo: 'evento',
-      texto: `Atendimento concluído por ${atendenteAtual.nome}. Movido para o histórico da corretora.`,
+      texto: `Atendimento finalizado por ${titular.nome}. Movido para o histórico da corretora.`,
       horario: hora
     };
 
@@ -238,7 +271,7 @@ export default function CentralAtendimento({ onVoltarSite }) {
         return {
           ...at,
           status: 'encerrado',
-          mensagens: [...at.mensagens, eventoFechamento]
+          mensagens: [...at.mensagens, msgDespedida, eventoFechamento]
         };
       }
       return at;
