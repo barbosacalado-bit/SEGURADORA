@@ -24,14 +24,19 @@ import {
   Sparkles,
   HelpCircle,
   Eye,
-  LogOut
+  LogOut,
+  BarChart3
 } from 'lucide-react';
+import DashboardDiretoria from './DashboardDiretoria';
 
 export default function CentralAtendimento({ onVoltarSite }) {
   // Atendente ativa nesta aba/janela (padrão Kamila)
   const [atendenteAtualId, setAtendenteAtualId] = useState(() => {
     return localStorage.getItem('messa_sessao_atendente_id') || 'kamila';
   });
+
+  // Alternador de Telas: 'cockpit' (Mesa Limpa) vs 'dashboard' (Visão da Diretoria)
+  const [modoVisualizacao, setModoVisualizacao] = useState('cockpit');
 
   const [atendimentos, setAtendimentos] = useState([]);
   const [atendimentoSelecionadoId, setAtendimentoSelecionadoId] = useState(null);
@@ -389,6 +394,35 @@ export default function CentralAtendimento({ onVoltarSite }) {
           </div>
         </div>
 
+        {/* NAVEGAÇÃO DE MODO: ATENDIMENTOS (MESA LIMPA) VS VISÃO DA DIRETORIA */}
+        <div className="flex items-center bg-black/25 p-1 rounded-2xl border border-white/10 shadow-inner">
+          <button
+            onClick={() => setModoVisualizacao('cockpit')}
+            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+              modoVisualizacao === 'cockpit'
+                ? 'bg-[#0866C9] text-white shadow-md'
+                : 'text-blue-200 hover:text-white hover:bg-white/10'
+            }`}
+          >
+            <MessageSquare className="w-3.5 h-3.5" />
+            <span>Mesa de Atendimento</span>
+          </button>
+          <button
+            onClick={() => setModoVisualizacao('dashboard')}
+            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+              modoVisualizacao === 'dashboard'
+                ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-md ring-1 ring-emerald-400/40'
+                : 'text-blue-200 hover:text-white hover:bg-white/10'
+            }`}
+          >
+            <BarChart3 className="w-3.5 h-3.5 text-emerald-300" />
+            <span>Visão da Diretoria</span>
+            <span className="px-1.5 py-0.5 text-[9px] font-bold bg-emerald-500/30 text-emerald-200 rounded uppercase tracking-wider">
+              Executivo
+            </span>
+          </button>
+        </div>
+
         {/* SELETOR DE LOGIN (Para alternar entre Kamila, Bia, Amanda e Júnior nas abas do Chrome/Firefox) */}
         <div className="flex items-center gap-3 bg-white/10 p-2 rounded-2xl border border-white/10">
           <div className="flex items-center gap-3 px-2">
@@ -457,8 +491,15 @@ export default function CentralAtendimento({ onVoltarSite }) {
         </div>
       </header>
 
-      {/* ÁREA DE TRABALHO DA ATENDENTE (3 COLUNAS HARMONIOSAS) */}
-      <div className="flex-grow flex flex-col md:flex-row overflow-hidden max-w-[1600px] w-full mx-auto p-3 sm:p-4 gap-4">
+      {/* CONTEÚDO PRINCIPAL: VISÃO DA DIRETORIA VS MESA DE ATENDIMENTO */}
+      {modoVisualizacao === 'dashboard' ? (
+        <DashboardDiretoria 
+          atendimentos={atendimentos} 
+          onVoltarAtendimentos={() => setModoVisualizacao('cockpit')} 
+        />
+      ) : (
+        /* ÁREA DE TRABALHO DA ATENDENTE (3 COLUNAS HARMONIOSAS) */
+        <div className="flex-grow flex flex-col md:flex-row overflow-hidden max-w-[1600px] w-full mx-auto p-3 sm:p-4 gap-4">
         
         {/* ================= COLUNA 1: FILA DE ATENDIMENTOS (MESA LIMPA) ================= */}
         <div className="w-full md:w-80 lg:w-96 bg-white rounded-2xl shadow-sm border border-slate-200/80 flex flex-col overflow-hidden">
@@ -1006,6 +1047,7 @@ export default function CentralAtendimento({ onVoltarSite }) {
         )}
 
       </div>
+      )}
 
       {/* ================= MODAL: TRANSFERÊNCIA ENTRE ATENDENTES ================= */}
       {modalTransferirOpen && (
