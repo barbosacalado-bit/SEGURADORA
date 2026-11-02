@@ -34,14 +34,14 @@ export default function Sobre() {
           <div className="lg:col-span-6 relative">
             <div className="relative mx-auto max-w-[500px] lg:max-w-none">
               
-              {/* ITEM 4: Fotografia Principal com imagem local estável e de alta qualidade */}
+              {/* ITEM 4: Fotografia Principal - Família brasileira feliz e segura */}
               <div className="relative rounded-3xl overflow-hidden shadow-2xl w-[86%] sm:w-[82%] border-4 border-white bg-slate-100">
                 <img
-                  src="/images/atendimento.jpg"
+                  src="/images/familia_feliz.jpg"
                   onError={(e) => {
-                    e.currentTarget.src = "https://images.unsplash.com/photo-1521791136064-7986c2920216?q=80&w=1000&auto=format&fit=crop";
+                    e.currentTarget.src = "/familia_feliz.jpg";
                   }}
-                  alt="Atendimento consultivo na Messa Corretora"
+                  alt="Família protegida com segurança e tranquilidade pela Messa Corretora"
                   className="w-full h-[360px] sm:h-[440px] object-cover object-center"
                 />
               </div>

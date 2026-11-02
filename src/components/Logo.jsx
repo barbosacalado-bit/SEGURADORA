@@ -5,9 +5,9 @@ export default function Logo({ variant = 'light', className = '' }) {
 
   return (
     <div className={`flex items-center gap-3.5 select-none ${className}`}>
-      {/* Brand Icon Shield */}
-      <div className="relative w-11 h-11 shrink-0 flex items-center justify-center">
-        <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full drop-shadow-sm">
+      {/* Brand Icon Shield (Presença visual ampliada e de autoridade) */}
+      <div className="relative w-14 h-14 shrink-0 flex items-center justify-center">
+        <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full drop-shadow-md">
           <defs>
             <linearGradient id={isDark ? "shieldGradDark" : "shieldGradLight"} x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
               <stop offset="0%" stopColor={isDark ? "#08A9E6" : "#062653"} />
@@ -49,13 +49,13 @@ export default function Logo({ variant = 'light', className = '' }) {
       </div>
 
       {/* Typography */}
-      <div className="flex flex-col leading-tight">
-        <span className={`text-[22px] font-extrabold tracking-tight font-['Poppins'] ${
+      <div className="flex flex-col justify-center leading-none">
+        <span className={`text-[27px] font-black tracking-tight font-['Poppins'] ${
           isDark ? 'text-white' : 'text-[#062653]'
         }`}>
           MESSA
         </span>
-        <span className={`text-[9.5px] font-semibold tracking-[0.22em] uppercase font-['Poppins'] ${
+        <span className={`text-[11px] font-extrabold tracking-[0.24em] uppercase font-['Poppins'] mt-1 ${
           isDark ? 'text-[#08A9E6]' : 'text-[#0866C9]'
         }`}>
           CORRETORA DE SEGUROS

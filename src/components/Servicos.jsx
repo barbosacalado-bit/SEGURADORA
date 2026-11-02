@@ -65,75 +65,72 @@ export default function Servicos({ onSelectProduto }) {
         </div>
 
         {/* Grade de 4 Cards Fotográficos */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-7">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-7 items-stretch">
           {servicos.map((item) => {
             const Icon = item.icon;
             return (
               <div
                 key={item.id}
-                className="group bg-white rounded-2xl overflow-hidden shadow-xs hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 flex flex-col justify-between border border-slate-100"
+                className="group bg-white rounded-2xl overflow-hidden shadow-xs hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 flex flex-col h-full border border-slate-100"
               >
-                <div>
-                  {/* Fotografia Superior com Altura Consistente */}
-                  <div className="relative h-48 sm:h-52 overflow-hidden bg-slate-100">
-                    <img
-                      src={item.foto}
-                      alt={item.titulo}
-                      className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-700"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#062653]/70 via-transparent to-transparent"></div>
+                {/* Fotografia Superior com Altura Consistente */}
+                <div className="relative h-48 sm:h-52 overflow-hidden bg-slate-100 shrink-0">
+                  <img
+                    src={item.foto}
+                    alt={item.titulo}
+                    className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-700"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#062653]/70 via-transparent to-transparent"></div>
 
-                    {/* Ícone Azul Sobreposto à Fotografia (Estilo Insuren) */}
-                    <div className="absolute bottom-3 left-4 w-12 h-12 rounded-xl bg-gradient-to-tr from-[#0866C9] to-[#08A9E6] text-white flex items-center justify-center shadow-lg border-2 border-white transform group-hover:rotate-6 transition-transform">
-                      <Icon className="w-6 h-6" />
-                    </div>
-                  </div>
-
-                  {/* Conteúdo do Card */}
-                  <div className="p-6 pt-5 space-y-2.5">
-                    <span className="text-[11px] font-semibold text-[#0866C9] uppercase tracking-wide block">
-                      {item.subtitulo}
-                    </span>
-                    <h3 className="text-lg font-bold text-[#062653] group-hover:text-[#0866C9] transition-colors leading-snug">
-                      {item.titulo}
-                    </h3>
-                    <p className="text-xs sm:text-sm text-[#596273] leading-relaxed">
-                      {item.descricao}
-                    </p>
+                  {/* Ícone Azul Sobreposto à Fotografia (Estilo Insuren) */}
+                  <div className="absolute bottom-3 left-4 w-12 h-12 rounded-xl bg-gradient-to-tr from-[#0866C9] to-[#08A9E6] text-white flex items-center justify-center shadow-lg border-2 border-white transform group-hover:rotate-6 transition-transform">
+                    <Icon className="w-6 h-6" />
                   </div>
                 </div>
 
-                {/* Botão de Ação */}
-                <div className="p-6 pt-0">
-                  {item.linkExterno ? (
-                    <div className="space-y-2">
-                      <a
-                        href="#cotacao"
-                        onClick={() => onSelectProduto && onSelectProduto(item.titulo)}
-                        className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-[#0866C9] hover:bg-[#062653] text-white text-xs sm:text-sm font-semibold transition-all duration-300 shadow-xs"
-                      >
-                        <span>{item.cta}</span>
-                        <ArrowRight className="w-4 h-4" />
-                      </a>
-                      <a
-                        href={item.linkExterno}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="w-full text-center block text-[11px] text-[#0866C9] hover:underline"
-                      >
-                        Contratação direta online (Porto Seguro) &rarr;
-                      </a>
-                    </div>
-                  ) : (
+                {/* Conteúdo do Card com Flex-1 */}
+                <div className="p-6 pt-5 flex flex-col flex-1 justify-between">
+                  <div>
+                    <span className="text-[11px] font-semibold text-[#0866C9] uppercase tracking-wide block min-h-[16px]">
+                      {item.subtitulo}
+                    </span>
+                    <h3 className="text-lg font-bold text-[#062653] group-hover:text-[#0866C9] transition-colors leading-snug mt-1 min-h-[48px] flex items-center">
+                      {item.titulo}
+                    </h3>
+                    <p className="text-xs sm:text-sm text-[#596273] leading-relaxed mt-2.5">
+                      {item.descricao}
+                    </p>
+                  </div>
+
+                  {/* Botões de Ação Perfeitamente Alinhados na Mesma Altura */}
+                  <div className="pt-6 mt-auto">
                     <a
                       href="#cotacao"
                       onClick={() => onSelectProduto && onSelectProduto(item.titulo)}
-                      className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-[#0866C9] hover:bg-[#062653] text-white text-xs sm:text-sm font-semibold transition-all duration-300 shadow-xs"
+                      className="w-full inline-flex items-center justify-center gap-2 h-11 px-4 rounded-xl bg-[#0866C9] hover:bg-[#062653] text-white text-xs sm:text-sm font-semibold transition-all duration-300 shadow-xs"
                     >
                       <span>{item.cta}</span>
                       <ArrowRight className="w-4 h-4" />
                     </a>
-                  )}
+
+                    {/* Linha Inferior Padronizada de Apoio para Linha Horizontal Perfeita */}
+                    <div className="h-6 mt-2 flex items-center justify-center">
+                      {item.linkExterno ? (
+                        <a
+                          href={item.linkExterno}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-center block text-[11.5px] font-medium text-[#0866C9] hover:underline"
+                        >
+                          Contratação direta online (Porto Seguro) &rarr;
+                        </a>
+                      ) : (
+                        <span className="text-center block text-[11px] text-slate-400">
+                          Atendimento consultivo sem compromisso
+                        </span>
+                      )}
+                    </div>
+                  </div>
                 </div>
 
               </div>
