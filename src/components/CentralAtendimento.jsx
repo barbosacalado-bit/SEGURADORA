@@ -134,6 +134,7 @@ export default function CentralAtendimento({ onVoltarSite }) {
 
   // Atendimento atualmente aberto na coluna central
   const atendimentoAtivo = atendimentos.find(a => a.id === atendimentoSelecionadoId) || null;
+  const atendenteTitular = ATENDENTES.find(a => a.id === atendimentoAtivo?.atendenteId) || atendenteAtual;
 
   // Envio de nova mensagem pela atendente (Plugado no WhatsApp Real)
   const handleEnviarMensagem = async (e) => {
@@ -248,7 +249,7 @@ export default function CentralAtendimento({ onVoltarSite }) {
     setAtendimentoSelecionadoId(null);
   };
 
-  // Transferência para outra Atendente com Nota Interna Sigilosa
+  // Transferência para outra Atendente com Passagem Oficial de Bastão
   const handleConfirmarTransferencia = () => {
     if (!atendimentoAtivo || !atendenteDestinoId) return;
     const destino = ATENDENTES.find(a => a.id === atendenteDestinoId);
@@ -259,7 +260,7 @@ export default function CentralAtendimento({ onVoltarSite }) {
 
     const mensagensAdicionais = [];
 
-    // Se houver nota interna (amarela, sigilosa para a equipe)
+    // 1. Se houver nota interna (amarela, sigilosa para a equipe)
     if (notaInternaTexto.trim()) {
       mensagensAdicionais.push({
         id: 'msg-nota-' + Date.now(),
@@ -270,11 +271,43 @@ export default function CentralAtendimento({ onVoltarSite }) {
       });
     }
 
+    // 2. Marco Visual Institucional: Passagem de Responsabilidade ("A Bola agora está com...")
     mensagensAdicionais.push({
       id: 'msg-transf-' + Date.now(),
       remetente: 'sistema',
-      tipo: 'evento',
+      tipo: 'transferencia_passagem',
+      deAtendente: {
+        id: atendenteAtual.id,
+        nome: atendenteAtual.nome,
+        cargo: atendenteAtual.cargo,
+        avatar: atendenteAtual.avatar
+      },
+      paraAtendente: {
+        id: destino.id,
+        nome: destino.nome,
+        cargo: destino.cargo,
+        avatar: destino.avatar
+      },
+      motivo: notaInternaTexto.trim() || null,
       texto: `Conversa transferida de ${atendenteAtual.nome} para ${destino.nome}.`,
+      horario: hora
+    });
+
+    // 3. Apresentação Oficial da Nova Responsável no Chat
+    const primeiroNome = atendimentoAtivo.cliente?.nome ? atendimentoAtivo.cliente.nome.split(' ')[0] : 'Cliente';
+    const textoEntrada = `Olá, ${primeiroNome}! Sou a ${destino.nome}, ${destino.cargo} na Messa Corretora.\n\nMinha colega ${atendenteAtual.nome} me transferiu este atendimento e estou assumindo o seu caso a partir de agora. Já revisei as informações e estou pronta para te atender com toda dedicação! Como posso te auxiliar?`;
+
+    mensagensAdicionais.push({
+      id: 'msg-apres-transf-' + (Date.now() + 1),
+      remetente: 'atendente',
+      tipo: 'apresentacao_card',
+      atendenteId: destino.id,
+      avatar: destino.avatar,
+      nome: destino.nome,
+      cargo: destino.cargo,
+      isTransferencia: true,
+      deAtendenteNome: atendenteAtual.nome,
+      texto: textoEntrada,
       horario: hora
     });
 
@@ -295,7 +328,10 @@ export default function CentralAtendimento({ onVoltarSite }) {
     setModalTransferirOpen(false);
     setNotaInternaTexto('');
     setAtendenteDestinoId('');
-    setAtendimentoSelecionadoId(null); // Some da tela da atendente atual!
+    
+    // Altera a sessão ativa para a nova atendente, para que a tela mostre imediatamente o resultado
+    setAtendenteAtualId(destino.id);
+    localStorage.setItem('messa_sessao_atendente_id', destino.id);
   };
 
   return (
@@ -607,7 +643,122 @@ export default function CentralAtendimento({ onVoltarSite }) {
 
                 {atendimentoAtivo.mensagens.map(msg => {
                   
-                  // Mensagem de Sistema / Evento
+                  // 1. MARCO VISUAL DE TRANSFERÊNCIA DE RESPONSABILIDADE ("A BOLA AGORA ESTÁ COM...")
+                  if (msg.tipo === 'transferencia_passagem' || (msg.tipo === 'evento' && msg.texto?.includes('transferida de'))) {
+                    let de = msg.deAtendente;
+                    let para = msg.paraAtendente;
+                    let motivo = msg.motivo;
+
+                    if (!de || !para) {
+                      // Parser retrocompatível para transferências antigas do histórico
+                      const match = msg.texto?.match(/transferida de (.+?) para (.+?)\./i);
+                      if (match) {
+                        const nomeDe = match[1].trim();
+                        const nomePara = match[2].trim();
+                        de = ATENDENTES.find(a => a.nome.toLowerCase() === nomeDe.toLowerCase()) || { nome: nomeDe, cargo: 'Consultora de Seguros', avatar: '/avatars/bia.jpg' };
+                        para = ATENDENTES.find(a => a.nome.toLowerCase() === nomePara.toLowerCase()) || { nome: nomePara, cargo: 'Especialista Messa', avatar: '/avatars/amanda.jpg' };
+                      } else {
+                        de = { nome: 'Atendente Anterior', cargo: 'Consultora', avatar: '/avatars/bia.jpg' };
+                        para = { nome: 'Nova Atendente', cargo: 'Especialista', avatar: '/avatars/amanda.jpg' };
+                      }
+                    }
+
+                    return (
+                      <div key={msg.id} className="my-5 mx-auto max-w-xl animate-fadeIn">
+                        <div className="relative rounded-3xl bg-gradient-to-r from-[#062653] via-[#083b7e] to-[#0866C9] text-white p-5 sm:p-6 shadow-xl border-2 border-[#08A9E6]/40 overflow-hidden">
+                          
+                          {/* Efeito luminoso de fundo */}
+                          <div className="absolute top-0 right-0 w-44 h-44 bg-[#08A9E6]/15 rounded-full blur-2xl pointer-events-none"></div>
+
+                          {/* Topo: Selo Institucional */}
+                          <div className="flex items-center justify-between gap-2 pb-3.5 border-b border-white/15">
+                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 text-[10.5px] font-black uppercase tracking-wider">
+                              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                              Passagem Oficial de Responsabilidade
+                            </div>
+                            <span className="text-[11px] text-blue-200 font-mono flex items-center gap-1.5">
+                              <Clock className="w-3.5 h-3.5 text-[#08A9E6]" />
+                              {msg.horario}
+                            </span>
+                          </div>
+
+                          {/* Corpo: Quem Passou ➔ A BOLA ESTÁ COM ➔ Nova Titular */}
+                          <div className="py-5 flex items-center justify-between gap-3 sm:gap-6">
+                            
+                            {/* Origem (Quem passou) */}
+                            <div className="flex flex-col items-center text-center w-1/3 opacity-80 hover:opacity-100 transition-opacity">
+                              <div className="relative mb-2">
+                                <img
+                                  src={de.avatar}
+                                  alt={de.nome}
+                                  className="w-14 h-14 sm:w-16 sm:h-16 rounded-full object-cover border-2 border-white/40 shadow-md grayscale-[25%]"
+                                />
+                                <span className="absolute -bottom-1 -right-1 px-1.5 py-0.5 rounded-full bg-slate-800 text-slate-200 text-[8.5px] font-bold border border-white/30">
+                                  Passou
+                                </span>
+                              </div>
+                              <span className="text-xs font-bold text-slate-200 leading-tight block">{de.nome}</span>
+                              <span className="text-[9.5px] text-blue-300 leading-tight mt-0.5 block line-clamp-1">{de.cargo}</span>
+                            </div>
+
+                            {/* Destaque Central: Passagem de Bastão */}
+                            <div className="flex flex-col items-center justify-center flex-1">
+                              <div className="flex items-center gap-1 text-[#08A9E6]">
+                                <span className="h-[2px] w-6 sm:w-10 bg-gradient-to-r from-transparent to-[#08A9E6]"></span>
+                                <div className="w-9 h-9 rounded-full bg-[#08A9E6]/25 border border-[#08A9E6] flex items-center justify-center text-cyan-300 shadow-md animate-pulse">
+                                  <ArrowRightLeft className="w-4 h-4" />
+                                </div>
+                                <span className="h-[2px] w-6 sm:w-10 bg-gradient-to-r from-[#08A9E6] to-transparent"></span>
+                              </div>
+                              <span className="text-[10px] sm:text-[11px] font-black text-cyan-300 uppercase tracking-widest mt-2 text-center drop-shadow-xs">
+                                A BOLA AGORA ESTÁ COM
+                              </span>
+                            </div>
+
+                            {/* Destino: Nova Titular com Alto Destaque */}
+                            <div className="flex flex-col items-center text-center w-1/3">
+                              <div className="relative mb-2">
+                                <img
+                                  src={para.avatar}
+                                  alt={para.nome}
+                                  className="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover border-3 border-emerald-400 shadow-2xl ring-4 ring-emerald-500/30 scale-105"
+                                />
+                                <span className="absolute -bottom-1.5 -right-1 px-2 py-0.5 rounded-full bg-emerald-500 text-white text-[9px] font-black border-2 border-[#062653] shadow-md uppercase tracking-wide">
+                                  NOVA TITULAR
+                                </span>
+                              </div>
+                              <span className="text-xs sm:text-sm font-black text-white leading-tight block">{para.nome}</span>
+                              <span className="text-[10px] text-emerald-300 font-semibold leading-tight mt-0.5 block line-clamp-1">{para.cargo}</span>
+                            </div>
+
+                          </div>
+
+                          {/* Notificação Institucional de Garantia */}
+                          <div className="pt-3.5 border-t border-white/15 flex items-center justify-between text-xs text-blue-100">
+                            <div className="flex items-center gap-2">
+                              <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+                              <span>
+                                Tarefa transferida de <strong>{de.nome}</strong>. O atendimento deste cliente agora está sob responsabilidade direta de <strong>{para.nome}</strong>.
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Motivo Interno Registrado */}
+                          {motivo && (
+                            <div className="mt-3 p-3 rounded-2xl bg-white/10 border border-white/15 text-xs text-blue-100 flex items-start gap-2.5">
+                              <AlertCircle className="w-4 h-4 text-amber-300 shrink-0 mt-0.5" />
+                              <div>
+                                <strong className="text-amber-200">Observação da transferência:</strong> {motivo}
+                              </div>
+                            </div>
+                          )}
+
+                        </div>
+                      </div>
+                    );
+                  }
+
+                  // 2. Mensagem de Sistema / Outros Eventos
                   if (msg.tipo === 'evento') {
                     return (
                       <div key={msg.id} className="text-center my-2">
@@ -618,7 +769,7 @@ export default function CentralAtendimento({ onVoltarSite }) {
                     );
                   }
 
-                  // Nota Interna Sigilosa (Amarela)
+                  // 3. Nota Interna Sigilosa (Amarela)
                   if (msg.remetente === 'nota_interna') {
                     return (
                       <div key={msg.id} className="bg-amber-50 border-l-4 border-amber-400 p-3 rounded-r-xl max-w-lg mx-auto shadow-sm">
@@ -633,16 +784,25 @@ export default function CentralAtendimento({ onVoltarSite }) {
                     );
                   }
 
-                  // CARD COM FOTO / AVATAR DA ATENDENTE (OPÇÃO 1 ESCOLHIDA)
+                  // 4. CARD COM FOTO / AVATAR DA ATENDENTE (Apresentação ou Nova Titular)
                   if (msg.tipo === 'apresentacao_card') {
                     return (
-                      <div key={msg.id} className="flex justify-end">
+                      <div key={msg.id} className="flex justify-end animate-fadeIn">
                         <div className="max-w-lg bg-white border border-[#0866C9]/25 rounded-3xl p-4 sm:p-5 shadow-lg space-y-3.5">
-                          <div className="flex items-center gap-3.5 bg-gradient-to-r from-blue-50/90 via-indigo-50/70 to-blue-50/50 p-3 rounded-2xl border border-blue-100">
+                          
+                          {/* Selo especial se for assunção de transferência */}
+                          {msg.isTransferencia && (
+                            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 text-[11px] font-bold border border-emerald-200">
+                              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                              Nova Responsável pelo Atendimento
+                            </div>
+                          )}
+
+                          <div className="flex items-center gap-3.5 bg-gradient-to-r from-blue-50/90 via-indigo-50/70 to-blue-50/50 p-3.5 rounded-2xl border border-blue-100">
                             <img 
                               src={msg.avatar} 
                               alt={msg.nome} 
-                              className="w-16 h-16 rounded-full object-cover border-2 border-white shadow-md ring-2 ring-[#0866C9]/20"
+                              className="w-16 h-16 rounded-full object-cover border-2 border-white shadow-md ring-2 ring-[#0866C9]/20 shrink-0"
                             />
                             <div>
                               <p className="font-bold text-sm sm:text-base text-[#062653]">{msg.nome}</p>
@@ -699,9 +859,18 @@ export default function CentralAtendimento({ onVoltarSite }) {
                 
                 {/* Botão de demonstração útil para o teste ao vivo */}
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-[10px] text-slate-400">
-                    Respondendo como: <strong className="text-[#0866C9]">{atendenteAtual.nome}</strong>
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="relative flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                    </span>
+                    <span className="text-[11px] text-slate-600">
+                      A bola agora está com: <strong className="text-[#062653] font-extrabold">{atendenteTitular.nome}</strong>
+                      <span className="ml-1 text-[10px] text-emerald-700 font-bold bg-emerald-50 px-1.5 py-0.5 rounded-md border border-emerald-200">
+                        Titular Atual
+                      </span>
+                    </span>
+                  </div>
                   
                   {/* Simular resposta do cliente na demonstração */}
                   <button
@@ -795,15 +964,21 @@ export default function CentralAtendimento({ onVoltarSite }) {
             {/* Atendente Responsável Atual */}
             <div className="mt-auto pt-4 border-t border-slate-100">
               <span className="text-[11px] text-slate-400 font-bold block mb-2 tracking-wider">RESPONSÁVEL PELO ATENDIMENTO</span>
-              <div className="flex items-center gap-3 bg-slate-50 p-2.5 rounded-2xl border border-slate-100">
+              <div className="flex items-center gap-3 bg-gradient-to-r from-blue-50/60 to-slate-50 p-3 rounded-2xl border border-blue-100/80 shadow-2xs">
                 <img 
-                  src={atendenteAtual.avatar} 
-                  alt={atendenteAtual.nome} 
-                  className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm ring-1 ring-[#0866C9]/20"
+                  src={atendenteTitular.avatar} 
+                  alt={atendenteTitular.nome} 
+                  className="w-13 h-13 rounded-full object-cover border-2 border-white shadow-md ring-2 ring-emerald-500/30 shrink-0"
                 />
                 <div>
-                  <p className="text-sm font-bold text-[#062653]">{atendenteAtual.nome}</p>
-                  <p className="text-xs text-[#0866C9] font-medium">{atendenteAtual.cargo}</p>
+                  <div className="flex items-center gap-1.5">
+                    <p className="text-sm font-extrabold text-[#062653]">{atendenteTitular.nome}</p>
+                    <span className="px-1.5 py-0.2 rounded-full bg-emerald-100 text-emerald-800 text-[8.5px] font-black uppercase tracking-wide">
+                      A BOLA É DELA
+                    </span>
+                  </div>
+                  <p className="text-xs text-[#0866C9] font-semibold">{atendenteTitular.cargo}</p>
+                  <p className="text-[10.5px] text-slate-400 mt-0.5">Messa Corretora</p>
                 </div>
               </div>
             </div>
