@@ -13,7 +13,7 @@ export const ATENDENTES = [
       'Seguro de Veículos (Auto, Sênior, Jovem, Táxi)',
       'Seguro de Vida e Família'
     ],
-    apresentacaoTexto: 'Olá! Sou a Kamila Araújo, consultora especialista em Seguros de Veículos e Vida aqui na Messa Corretora. Recebi sua solicitação direto do nosso site e já estou separando as melhores opções para o seu perfil. Como posso te ajudar hoje?'
+    apresentacaoTexto: 'Olá! Recebi sua solicitação do nosso site e já estou separando as melhores coberturas para o seu perfil. Como posso te ajudar hoje?'
   },
   {
     id: 'bia',
@@ -27,7 +27,7 @@ export const ATENDENTES = [
       'Seguro Residencial ou Veraneio',
       'Agronegócio (Máquinas / Safra)'
     ],
-    apresentacaoTexto: 'Olá! Sou a Bia Calado, especialista em Seguro Residencial e Agronegócio na Messa Corretora. Vi sua mensagem através do nosso site e já estou à sua disposição. Como posso te ajudar hoje?'
+    apresentacaoTexto: 'Olá! Vi sua solicitação através do nosso site e já estou à sua disposição para analisar o seu caso. Como posso te ajudar hoje?'
   },
   {
     id: 'amanda',
@@ -41,7 +41,7 @@ export const ATENDENTES = [
       'Consórcio Imobiliário Porto Seguro',
       'Previdência Privada'
     ],
-    apresentacaoTexto: 'Olá! Sou a Amanda Campelo, responsável pelo setor de Consórcios e Previdência Privada da Messa Corretora. Recebi sua solicitação do portal e estou pronta para te apresentar as melhores condições. Como posso te auxiliar?'
+    apresentacaoTexto: 'Olá! Recebi sua solicitação do portal e estou pronta para te apresentar as melhores condições. Como posso te auxiliar?'
   },
   {
     id: 'junior',
@@ -55,7 +55,7 @@ export const ATENDENTES = [
       'Seguro Empresarial / Frotas',
       'Outras modalidades'
     ],
-    apresentacaoTexto: 'Olá! Sou o Júnior Calado, consultor sênior na Messa Corretora especializado em Seguros Empresariais, Frotas e Soluções Customizadas. Recebi sua solicitação e já estou analisando seu caso. Em que posso te ajudar?'
+    apresentacaoTexto: 'Olá! Recebi sua solicitação através do site e já estou analisando o seu caso para propor a melhor estrutura. Em que posso te ajudar?'
   }
 ];
 
@@ -156,7 +156,13 @@ export function carregarAtendimentos() {
       mensagens: (at.mensagens || []).map(m => {
         if (m.tipo === 'apresentacao_card') {
           const atCard = ATENDENTES.find(a => a.id === m.atendenteId || a.nome?.toLowerCase() === m.nome?.toLowerCase());
-          return atCard ? { ...m, avatar: atCard.avatar, nome: atCard.nome, cargo: atCard.cargo } : m;
+          if (atCard) {
+            const textoEnxuto = (m.texto?.includes('Sou a') || m.texto?.includes('Sou o'))
+              ? atCard.apresentacaoTexto
+              : m.texto;
+            return { ...m, avatar: atCard.avatar, nome: atCard.nome, cargo: atCard.cargo, texto: textoEnxuto };
+          }
+          return m;
         }
         if (m.tipo === 'transferencia_passagem') {
           const de = ATENDENTES.find(a => a.id === m.deAtendente?.id || a.nome?.toLowerCase() === m.deAtendente?.nome?.toLowerCase());

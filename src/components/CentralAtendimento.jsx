@@ -293,9 +293,9 @@ export default function CentralAtendimento({ onVoltarSite }) {
       horario: hora
     });
 
-    // 3. Apresentação Oficial da Nova Responsável no Chat
+    // 3. Apresentação Oficial da Nova Responsável no Chat (Direta e Sem Redundâncias)
     const primeiroNome = atendimentoAtivo.cliente?.nome ? atendimentoAtivo.cliente.nome.split(' ')[0] : 'Cliente';
-    const textoEntrada = `Olá, ${primeiroNome}! Sou a ${destino.nome}, ${destino.cargo} na Messa Corretora.\n\nMinha colega ${atendenteAtual.nome} me transferiu este atendimento e estou assumindo o seu caso a partir de agora. Já revisei as informações e estou pronta para te atender com toda dedicação! Como posso te auxiliar?`;
+    const textoEntrada = `Olá, ${primeiroNome}! Minha colega ${atendenteAtual.nome} me repassou o seu contato e estou assumindo o seu atendimento a partir de agora. Como posso te auxiliar hoje?`;
 
     mensagensAdicionais.push({
       id: 'msg-apres-transf-' + (Date.now() + 1),
@@ -643,11 +643,10 @@ export default function CentralAtendimento({ onVoltarSite }) {
 
                 {atendimentoAtivo.mensagens.map(msg => {
                   
-                  // 1. MARCO VISUAL DE TRANSFERÊNCIA DE RESPONSABILIDADE ("A BOLA AGORA ESTÁ COM...")
+                  // 1. FAIXA SLIM EXECUTIVA DE TRANSFERÊNCIA DE RESPONSABILIDADE (Altura Reduzida em >50% e Sem Redundâncias)
                   if (msg.tipo === 'transferencia_passagem' || (msg.tipo === 'evento' && msg.texto?.includes('transferida de'))) {
                     let de = msg.deAtendente;
                     let para = msg.paraAtendente;
-                    let motivo = msg.motivo;
 
                     if (!de || !para) {
                       // Parser retrocompatível para transferências antigas do histórico
@@ -655,8 +654,8 @@ export default function CentralAtendimento({ onVoltarSite }) {
                       if (match) {
                         const nomeDe = match[1].trim();
                         const nomePara = match[2].trim();
-                        de = ATENDENTES.find(a => a.nome.toLowerCase() === nomeDe.toLowerCase()) || { nome: nomeDe, cargo: 'Consultora de Seguros', avatar: '/avatars/bia_oficial.jpg' };
-                        para = ATENDENTES.find(a => a.nome.toLowerCase() === nomePara.toLowerCase()) || { nome: nomePara, cargo: 'Especialista Messa', avatar: '/avatars/amanda_oficial.jpg' };
+                        de = ATENDENTES.find(a => a.nome.toLowerCase() === nomeDe.toLowerCase()) || { nome: nomeDe, cargo: 'Consultora', avatar: '/avatars/bia_oficial.jpg' };
+                        para = ATENDENTES.find(a => a.nome.toLowerCase() === nomePara.toLowerCase()) || { nome: nomePara, cargo: 'Especialista', avatar: '/avatars/amanda_oficial.jpg' };
                       } else {
                         de = { nome: 'Atendente Anterior', cargo: 'Consultora', avatar: '/avatars/bia_oficial.jpg' };
                         para = { nome: 'Nova Atendente', cargo: 'Especialista', avatar: '/avatars/amanda_oficial.jpg' };
@@ -664,94 +663,65 @@ export default function CentralAtendimento({ onVoltarSite }) {
                     }
 
                     return (
-                      <div key={msg.id} className="my-5 mx-auto max-w-xl animate-fadeIn">
-                        <div className="relative rounded-3xl bg-gradient-to-r from-[#062653] via-[#083b7e] to-[#0866C9] text-white p-5 sm:p-6 shadow-xl border-2 border-[#08A9E6]/40 overflow-hidden">
+                      <div key={msg.id} className="my-2.5 mx-auto max-w-lg animate-fadeIn">
+                        <div className="relative rounded-2xl bg-gradient-to-r from-[#062653] via-[#083b7e] to-[#0866C9] text-white px-4 py-2.5 sm:py-3 shadow-md border border-[#08A9E6]/30 overflow-hidden">
                           
-                          {/* Efeito luminoso de fundo */}
-                          <div className="absolute top-0 right-0 w-44 h-44 bg-[#08A9E6]/15 rounded-full blur-2xl pointer-events-none"></div>
-
-                          {/* Topo: Selo Institucional */}
-                          <div className="flex items-center justify-between gap-2 pb-3.5 border-b border-white/15">
-                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 text-[10.5px] font-black uppercase tracking-wider">
-                              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                              Passagem Oficial de Responsabilidade
-                            </div>
-                            <span className="text-[11px] text-blue-200 font-mono flex items-center gap-1.5">
-                              <Clock className="w-3.5 h-3.5 text-[#08A9E6]" />
-                              {msg.horario}
-                            </span>
-                          </div>
-
-                          {/* Corpo: Quem Passou ➔ A BOLA ESTÁ COM ➔ Nova Titular */}
-                          <div className="py-5 flex items-center justify-between gap-3 sm:gap-6">
+                          {/* Linha única horizontal ultra-enxuta */}
+                          <div className="flex items-center justify-between gap-2.5">
                             
-                            {/* Origem (Quem passou) */}
-                            <div className="flex flex-col items-center text-center w-1/3 opacity-80 hover:opacity-100 transition-opacity">
-                              <div className="relative mb-2">
+                            {/* De: Quem passou */}
+                            <div className="flex items-center gap-2 min-w-0">
+                              <div className="relative shrink-0">
                                 <img
                                   src={de.avatar}
                                   alt={de.nome}
-                                  className="w-14 h-14 sm:w-16 sm:h-16 rounded-full object-cover border-2 border-white/40 shadow-md grayscale-[25%]"
+                                  className="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover border border-white/50 grayscale-[25%]"
                                 />
-                                <span className="absolute -bottom-1 -right-1 px-1.5 py-0.5 rounded-full bg-slate-800 text-slate-200 text-[8.5px] font-bold border border-white/30">
+                                <span className="absolute -bottom-1 -right-1 px-1 py-0.2 rounded-full bg-slate-800 text-slate-300 text-[7px] font-bold border border-white/20">
                                   Passou
                                 </span>
                               </div>
-                              <span className="text-xs font-bold text-slate-200 leading-tight block">{de.nome}</span>
-                              <span className="text-[9.5px] text-blue-300 leading-tight mt-0.5 block line-clamp-1">{de.cargo}</span>
+                              <div className="min-w-0">
+                                <span className="text-[11px] sm:text-xs font-bold text-slate-100 block truncate leading-tight">{de.nome}</span>
+                                <span className="text-[8.5px] sm:text-[9px] text-blue-300 block truncate leading-tight">{de.cargo}</span>
+                              </div>
                             </div>
 
-                            {/* Destaque Central: Passagem de Bastão */}
-                            <div className="flex flex-col items-center justify-center flex-1">
+                            {/* Fluxo Central: A BOLA AGORA ESTÁ COM */}
+                            <div className="flex flex-col items-center justify-center shrink-0 px-1">
                               <div className="flex items-center gap-1 text-[#08A9E6]">
-                                <span className="h-[2px] w-6 sm:w-10 bg-gradient-to-r from-transparent to-[#08A9E6]"></span>
-                                <div className="w-9 h-9 rounded-full bg-[#08A9E6]/25 border border-[#08A9E6] flex items-center justify-center text-cyan-300 shadow-md animate-pulse">
-                                  <ArrowRightLeft className="w-4 h-4" />
+                                <span className="h-[1px] w-3 sm:w-5 bg-[#08A9E6]/50"></span>
+                                <div className="w-5 h-5 rounded-full bg-[#08A9E6]/20 border border-[#08A9E6]/60 flex items-center justify-center text-cyan-300">
+                                  <ArrowRightLeft className="w-2.5 h-2.5" />
                                 </div>
-                                <span className="h-[2px] w-6 sm:w-10 bg-gradient-to-r from-[#08A9E6] to-transparent"></span>
+                                <span className="h-[1px] w-3 sm:w-5 bg-[#08A9E6]/50"></span>
                               </div>
-                              <span className="text-[10px] sm:text-[11px] font-black text-cyan-300 uppercase tracking-widest mt-2 text-center drop-shadow-xs">
+                              <span className="text-[7.5px] sm:text-[8px] font-black text-cyan-300 uppercase tracking-widest mt-0.5 whitespace-nowrap">
                                 A BOLA AGORA ESTÁ COM
                               </span>
                             </div>
 
-                            {/* Destino: Nova Titular com Alto Destaque */}
-                            <div className="flex flex-col items-center text-center w-1/3">
-                              <div className="relative mb-2">
+                            {/* Para: Novo Titular */}
+                            <div className="flex items-center gap-2 min-w-0 justify-end text-right">
+                              <div className="min-w-0">
+                                <div className="flex items-center gap-1 justify-end">
+                                  <span className="px-1 py-0.2 rounded-full bg-emerald-500 text-white text-[7px] font-black uppercase">
+                                    Titular
+                                  </span>
+                                  <span className="text-[11.5px] sm:text-xs font-black text-white block truncate leading-tight">{para.nome}</span>
+                                </div>
+                                <span className="text-[8.5px] sm:text-[9px] text-emerald-300 font-medium block truncate leading-tight">{para.cargo}</span>
+                              </div>
+                              <div className="relative shrink-0">
                                 <img
                                   src={para.avatar}
                                   alt={para.nome}
-                                  className="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover border-3 border-emerald-400 shadow-2xl ring-4 ring-emerald-500/30 scale-105"
+                                  className="w-10 h-10 sm:w-11 sm:h-11 rounded-full object-cover border-2 border-emerald-400 shadow-md ring-2 ring-emerald-500/30"
                                 />
-                                <span className="absolute -bottom-1.5 -right-1 px-2 py-0.5 rounded-full bg-emerald-500 text-white text-[9px] font-black border-2 border-[#062653] shadow-md uppercase tracking-wide">
-                                  NOVA TITULAR
-                                </span>
                               </div>
-                              <span className="text-xs sm:text-sm font-black text-white leading-tight block">{para.nome}</span>
-                              <span className="text-[10px] text-emerald-300 font-semibold leading-tight mt-0.5 block line-clamp-1">{para.cargo}</span>
                             </div>
 
                           </div>
-
-                          {/* Notificação Institucional de Garantia */}
-                          <div className="pt-3.5 border-t border-white/15 flex items-center justify-between text-xs text-blue-100">
-                            <div className="flex items-center gap-2">
-                              <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
-                              <span>
-                                Tarefa transferida de <strong>{de.nome}</strong>. O atendimento deste cliente agora está sob responsabilidade direta de <strong>{para.nome}</strong>.
-                              </span>
-                            </div>
-                          </div>
-
-                          {/* Motivo Interno Registrado */}
-                          {motivo && (
-                            <div className="mt-3 p-3 rounded-2xl bg-white/10 border border-white/15 text-xs text-blue-100 flex items-start gap-2.5">
-                              <AlertCircle className="w-4 h-4 text-amber-300 shrink-0 mt-0.5" />
-                              <div>
-                                <strong className="text-amber-200">Observação da transferência:</strong> {motivo}
-                              </div>
-                            </div>
-                          )}
 
                         </div>
                       </div>
@@ -772,52 +742,59 @@ export default function CentralAtendimento({ onVoltarSite }) {
                   // 3. Nota Interna Sigilosa (Amarela)
                   if (msg.remetente === 'nota_interna') {
                     return (
-                      <div key={msg.id} className="bg-amber-50 border-l-4 border-amber-400 p-3 rounded-r-xl max-w-lg mx-auto shadow-sm">
-                        <div className="flex items-center gap-1.5 text-[10px] font-bold text-amber-800 uppercase tracking-wider mb-1">
+                      <div key={msg.id} className="bg-amber-50 border-l-4 border-amber-400 p-2.5 rounded-r-xl max-w-md mx-auto shadow-sm">
+                        <div className="flex items-center gap-1.5 text-[9.5px] font-bold text-amber-800 uppercase tracking-wider mb-0.5">
                           <AlertCircle className="w-3 h-3" />
                           <span>Nota Interna da Equipe (O cliente não vê)</span>
                           <span className="text-amber-600 font-normal ml-auto">{msg.horario}</span>
                         </div>
                         <p className="text-xs text-amber-900 leading-relaxed font-sans">{msg.texto}</p>
-                        <p className="text-[10px] text-amber-700 mt-1 italic">— Anotado por {msg.atendenteNome}</p>
+                        <p className="text-[9.5px] text-amber-700 mt-0.5 italic">— Anotado por {msg.atendenteNome}</p>
                       </div>
                     );
                   }
 
-                  // 4. CARD COM FOTO / AVATAR DA ATENDENTE (Apresentação ou Nova Titular)
+                  // 4. CARD COM FOTO / AVATAR DA ATENDENTE (Reduzido em 40%, Enxuto e Sem Repetições)
                   if (msg.tipo === 'apresentacao_card') {
+                    const atCard = ATENDENTES.find(a => a.id === msg.atendenteId || a.nome?.toLowerCase() === msg.nome?.toLowerCase());
+                    const fotoAvatar = atCard?.avatar || msg.avatar;
+                    const nomeAtendente = atCard?.nome || msg.nome;
+                    const cargoAtendente = atCard?.cargo || msg.cargo;
+
                     return (
                       <div key={msg.id} className="flex justify-end animate-fadeIn">
-                        <div className="max-w-lg bg-white border border-[#0866C9]/25 rounded-3xl p-4 sm:p-5 shadow-lg space-y-3.5">
+                        <div className="max-w-[420px] bg-white border border-[#0866C9]/20 rounded-2xl p-3 sm:p-3.5 shadow-md space-y-2.5">
                           
-                          {/* Selo especial se for assunção de transferência */}
+                          {/* Selo se for assunção de transferência */}
                           {msg.isTransferencia && (
-                            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 text-[11px] font-bold border border-emerald-200">
-                              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                            <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 text-[9.5px] font-bold border border-emerald-200">
+                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
                               Nova Responsável pelo Atendimento
                             </div>
                           )}
 
-                          <div className="flex items-center gap-3.5 bg-gradient-to-r from-blue-50/90 via-indigo-50/70 to-blue-50/50 p-3.5 rounded-2xl border border-blue-100">
+                          {/* Crachá Superior Compacto (Avatar 44px) */}
+                          <div className="flex items-center gap-2.5 bg-gradient-to-r from-blue-50/80 to-slate-50 p-2 sm:p-2.5 rounded-xl border border-blue-100/70">
                             <img 
-                              src={ATENDENTES.find(a => a.id === msg.atendenteId || a.nome?.toLowerCase() === msg.nome?.toLowerCase())?.avatar || msg.avatar} 
-                              alt={msg.nome} 
-                              className="w-16 h-16 rounded-full object-cover border-2 border-white shadow-md ring-2 ring-[#0866C9]/20 shrink-0"
+                              src={fotoAvatar} 
+                              alt={nomeAtendente} 
+                              className="w-11 h-11 rounded-full object-cover border border-white shadow-sm ring-1 ring-[#0866C9]/20 shrink-0"
                             />
-                            <div>
-                              <p className="font-bold text-sm sm:text-base text-[#062653]">{msg.nome}</p>
-                              <p className="text-xs sm:text-[13px] text-[#0866C9] font-semibold">{msg.cargo}</p>
-                              <p className="text-[11px] text-slate-500 font-medium">Messa Corretora de Seguros • Bebedouro/SP</p>
+                            <div className="min-w-0">
+                              <p className="font-bold text-xs sm:text-[13px] text-[#062653] leading-tight truncate">{nomeAtendente}</p>
+                              <p className="text-[11px] text-[#0866C9] font-semibold leading-tight mt-0.5 truncate">{cargoAtendente}</p>
+                              <p className="text-[9.5px] text-slate-400 font-medium leading-tight mt-0.5">Messa Corretora • Bebedouro/SP</p>
                             </div>
                           </div>
                           
-                          <p className="text-xs sm:text-sm text-slate-700 leading-relaxed whitespace-pre-line font-normal">
+                          {/* Texto Direto e Acolhedor sem Redundâncias */}
+                          <p className="text-xs text-slate-700 leading-relaxed font-normal">
                             {msg.texto}
                           </p>
 
-                          <div className="flex items-center justify-end gap-1.5 text-[11px] text-slate-400 pt-1">
+                          <div className="flex items-center justify-end gap-1 text-[10px] text-slate-400 pt-0.5">
                             <span>{msg.horario}</span>
-                            <CheckCheck className="w-3.5 h-3.5 text-[#0866C9]" />
+                            <CheckCheck className="w-3 h-3 text-[#0866C9]" />
                           </div>
                         </div>
                       </div>
