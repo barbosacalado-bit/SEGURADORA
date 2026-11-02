@@ -37,7 +37,7 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-white text-[#596273] font-['Poppins',sans-serif] selection:bg-[#0866C9] selection:text-white">
+    <div className="min-h-screen flex flex-col bg-white text-[#596273] font-['Poppins',sans-serif] selection:bg-[#0866C9] selection:text-white w-full overflow-x-clip">
       
       {/* 01. Cabeçalho Horizontal & Navegação Institucional */}
       <Header 
