@@ -663,60 +663,60 @@ export default function CentralAtendimento({ onVoltarSite }) {
                     }
 
                     return (
-                      <div key={msg.id} className="my-2.5 mx-auto max-w-lg animate-fadeIn">
-                        <div className="relative rounded-2xl bg-gradient-to-r from-[#062653] via-[#083b7e] to-[#0866C9] text-white px-4 py-2.5 sm:py-3 shadow-md border border-[#08A9E6]/30 overflow-hidden">
+                      <div key={msg.id} className="my-2.5 mx-auto max-w-2xl lg:max-w-[700px] w-full animate-fadeIn">
+                        <div className="relative rounded-2xl bg-gradient-to-r from-[#062653] via-[#083b7e] to-[#0866C9] text-white px-4 sm:px-6 py-2.5 sm:py-3 shadow-md border border-[#08A9E6]/30 overflow-hidden">
                           
-                          {/* Linha única horizontal ultra-enxuta */}
-                          <div className="flex items-center justify-between gap-2.5">
+                          {/* Linha única horizontal ampla, confortável e sem cortes de texto */}
+                          <div className="flex items-center justify-between gap-3 sm:gap-6">
                             
                             {/* De: Quem passou */}
-                            <div className="flex items-center gap-2 min-w-0">
+                            <div className="flex items-center gap-2.5 shrink-0">
                               <div className="relative shrink-0">
                                 <img
                                   src={de.avatar}
                                   alt={de.nome}
-                                  className="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover border border-white/50 grayscale-[25%]"
+                                  className="w-10 h-10 sm:w-11 sm:h-11 rounded-full object-cover border border-white/50 grayscale-[20%]"
                                 />
-                                <span className="absolute -bottom-1 -right-1 px-1 py-0.2 rounded-full bg-slate-800 text-slate-300 text-[7px] font-bold border border-white/20">
+                                <span className="absolute -bottom-1 -right-1 px-1.5 py-0.2 rounded-full bg-slate-800 text-slate-300 text-[7.5px] font-bold border border-white/20">
                                   Passou
                                 </span>
                               </div>
-                              <div className="min-w-0">
-                                <span className="text-[11px] sm:text-xs font-bold text-slate-100 block truncate leading-tight">{de.nome}</span>
-                                <span className="text-[8.5px] sm:text-[9px] text-blue-300 block truncate leading-tight">{de.cargo}</span>
+                              <div className="text-left">
+                                <span className="text-[12px] sm:text-[13px] font-bold text-slate-100 block whitespace-nowrap leading-tight">{de.nome}</span>
+                                <span className="text-[9.5px] sm:text-[10.5px] text-blue-200 block whitespace-nowrap leading-tight mt-0.5">{de.cargo}</span>
                               </div>
                             </div>
 
                             {/* Fluxo Central: A BOLA AGORA ESTÁ COM */}
-                            <div className="flex flex-col items-center justify-center shrink-0 px-1">
-                              <div className="flex items-center gap-1 text-[#08A9E6]">
-                                <span className="h-[1px] w-3 sm:w-5 bg-[#08A9E6]/50"></span>
-                                <div className="w-5 h-5 rounded-full bg-[#08A9E6]/20 border border-[#08A9E6]/60 flex items-center justify-center text-cyan-300">
-                                  <ArrowRightLeft className="w-2.5 h-2.5" />
+                            <div className="flex flex-col items-center justify-center shrink-0 px-2">
+                              <div className="flex items-center gap-1.5 text-[#08A9E6]">
+                                <span className="h-[1px] w-4 sm:w-8 bg-[#08A9E6]/60"></span>
+                                <div className="w-6 h-6 rounded-full bg-[#08A9E6]/20 border border-[#08A9E6]/60 flex items-center justify-center text-cyan-300">
+                                  <ArrowRightLeft className="w-3 h-3" />
                                 </div>
-                                <span className="h-[1px] w-3 sm:w-5 bg-[#08A9E6]/50"></span>
+                                <span className="h-[1px] w-4 sm:w-8 bg-[#08A9E6]/60"></span>
                               </div>
-                              <span className="text-[7.5px] sm:text-[8px] font-black text-cyan-300 uppercase tracking-widest mt-0.5 whitespace-nowrap">
+                              <span className="text-[8px] sm:text-[9px] font-black text-cyan-300 uppercase tracking-widest mt-0.5 whitespace-nowrap">
                                 A BOLA AGORA ESTÁ COM
                               </span>
                             </div>
 
                             {/* Para: Novo Titular */}
-                            <div className="flex items-center gap-2 min-w-0 justify-end text-right">
-                              <div className="min-w-0">
-                                <div className="flex items-center gap-1 justify-end">
-                                  <span className="px-1 py-0.2 rounded-full bg-emerald-500 text-white text-[7px] font-black uppercase">
+                            <div className="flex items-center gap-2.5 shrink-0 justify-end text-right">
+                              <div className="text-right">
+                                <div className="flex items-center gap-1.5 justify-end">
+                                  <span className="px-1.5 py-0.2 rounded-full bg-emerald-500 text-white text-[7.5px] font-black uppercase">
                                     Titular
                                   </span>
-                                  <span className="text-[11.5px] sm:text-xs font-black text-white block truncate leading-tight">{para.nome}</span>
+                                  <span className="text-[12.5px] sm:text-[13.5px] font-black text-white block whitespace-nowrap leading-tight">{para.nome}</span>
                                 </div>
-                                <span className="text-[8.5px] sm:text-[9px] text-emerald-300 font-medium block truncate leading-tight">{para.cargo}</span>
+                                <span className="text-[9.5px] sm:text-[10.5px] text-emerald-300 font-semibold block whitespace-nowrap leading-tight mt-0.5">{para.cargo}</span>
                               </div>
                               <div className="relative shrink-0">
                                 <img
                                   src={para.avatar}
                                   alt={para.nome}
-                                  className="w-10 h-10 sm:w-11 sm:h-11 rounded-full object-cover border-2 border-emerald-400 shadow-md ring-2 ring-emerald-500/30"
+                                  className="w-11 h-11 sm:w-12 sm:h-12 rounded-full object-cover border-2 border-emerald-400 shadow-md ring-2 ring-emerald-500/30"
                                 />
                               </div>
                             </div>
