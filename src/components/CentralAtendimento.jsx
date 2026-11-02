@@ -25,44 +25,9 @@ import {
   HelpCircle,
   Eye,
   LogOut,
-  BarChart3,
-  PenTool,
-  Zap,
-  CheckCircle2,
-  Calendar,
-  ExternalLink,
-  DollarSign,
-  FileCheck
+  BarChart3
 } from 'lucide-react';
 import DashboardDiretoria from './DashboardDiretoria';
-
-// SCRIPTS DE RESPOSTAS RÁPIDAS (PADRÃO MESSA CORRETORA)
-const RESPOSTAS_RAPIDAS = [
-  {
-    id: 'docs_auto',
-    titulo: '📋 Solicitação de Documentos (Auto)',
-    descricao: 'CNH, CRLV e CEP de pernoite para fechar com bônus',
-    texto: 'Para localizarmos a melhor proposta com desconto de bônus na Porto Seguro, nos envie por favor:\n1️⃣ Foto da CNH do condutor principal\n2️⃣ Documento do veículo (CRLV) ou placa e modelo\n3️⃣ CEP onde o veículo pernoita\nAssim que recebermos, já calculamos e emitimos sua minuta de apólice!'
-  },
-  {
-    id: 'agro_boas_vindas',
-    titulo: '🌾 Apresentação Agronegócio (Safra & Máquinas)',
-    descricao: 'Especialista em proteção agrícola de Bebedouro',
-    texto: 'Olá! Sou da equipe de Agronegócios da Messa Corretora. Atendemos Bebedouro e toda a região com proteção de safras (cana, grãos, citrus), pivôs centrais e maquinários agrícolas (tratores e colheitadeiras). Qual equipamento ou área você deseja proteger hoje?'
-  },
-  {
-    id: 'sinistro_24h',
-    titulo: '🚨 Sinistro / Emergência 24h Porto Seguro',
-    descricao: 'Guincho, colisão ou assistência emergencial',
-    texto: 'Caso esteja em situação de emergência agora (guincho, pane ou colisão), o canal 24h oficial é 0800 727 0800. Nossa equipe aqui da Messa já registrou sua ocorrência e está à inteira disposição para acompanhar todo o processo!'
-  },
-  {
-    id: 'confirmacao_proposta',
-    titulo: '✍️ Envio de Minuta para Fechamento (ZapSign)',
-    descricao: 'Aviso de envio de apólice pronta para assinatura',
-    texto: 'Sua proposta de seguro foi finalizada com sucesso pelas melhores seguradoras parceiras! Estou gerando neste momento o seu link oficial do ZapSign para assinatura rápida pelo celular em 15 segundos sem burocracia.'
-  }
-];
 
 export default function CentralAtendimento({ onVoltarSite }) {
   // Atendente ativa nesta aba/janela (padrão Kamila)
@@ -119,17 +84,6 @@ export default function CentralAtendimento({ onVoltarSite }) {
   const [modalNotaInternaOpen, setModalNotaInternaOpen] = useState(false);
   const [notaInternaTexto, setNotaInternaTexto] = useState('');
   const [atendenteDestinoId, setAtendenteDestinoId] = useState('');
-
-  // Modais de ZapSign e Respostas Rápidas
-  const [modalZapSignOpen, setModalZapSignOpen] = useState(false);
-  const [modalRespostasRapidasOpen, setModalRespostasRapidasOpen] = useState(false);
-  const [zapSignForm, setZapSignForm] = useState({
-    seguradora: 'Porto Seguro',
-    categoria: '',
-    premio: 'R$ 2.450,00',
-    parcelas: '10x de R$ 245,00 sem juros',
-    coberturaPrincipal: 'Cobertura Compreensiva 100% FIPE + Terceiros R$ 100.000 + Guincho Ilimitado'
-  });
 
   const messagesEndRef = useRef(null);
 
@@ -268,107 +222,6 @@ export default function CentralAtendimento({ onVoltarSite }) {
 
     salvarAtendimentos(listaAtualizada);
     setAtendimentos(listaAtualizada);
-  };
-
-  // 1. Emitir proposta para assinatura digital via ZapSign
-  const handleEmitirZapSign = () => {
-    if (!atendimentoAtivo) return;
-    const agora = new Date();
-    const hora = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-    const hashId = Math.random().toString(36).substring(2, 8).toUpperCase();
-    const linkZap = `https://app.zapsign.com.br/v/${hashId}`;
-    const categoriaProposta = zapSignForm.categoria || atendimentoAtivo.categoria || 'Seguro';
-
-    const msgZap = {
-      id: 'msg-zapsign-' + Date.now(),
-      remetente: 'atendente',
-      tipo: 'zapsign_proposta',
-      atendenteId: atendenteAtual.id,
-      atendenteNome: atendenteAtual.nome,
-      seguradora: zapSignForm.seguradora,
-      categoria: categoriaProposta,
-      premio: zapSignForm.premio,
-      parcelas: zapSignForm.parcelas,
-      cobertura: zapSignForm.coberturaPrincipal,
-      linkAssinatura: linkZap,
-      codigoProposta: `MESSA-${hashId}`,
-      protocolo: atendimentoAtivo.protocolo,
-      statusAssinatura: 'aguardando',
-      horario: hora
-    };
-
-    const listaAtualizada = atendimentos.map(at => {
-      if (at.id === atendimentoAtivo.id) {
-        return {
-          ...at,
-          propostaZapSign: msgZap,
-          mensagens: [...at.mensagens, msgZap]
-        };
-      }
-      return at;
-    });
-
-    salvarAtendimentos(listaAtualizada);
-    setAtendimentos(listaAtualizada);
-    setModalZapSignOpen(false);
-
-    // Dispara via WhatsApp Real através do nosso Gateway Baileys / Z-API
-    try {
-      const endpoint = window.location.hostname === 'localhost' 
-        ? 'http://localhost:3001/send-message' 
-        : 'https://large-teeth-live.loca.lt/send-message';
-
-      const textoZap = `📄 *MESSA CORRETORA • PROPOSTA PRONTA PARA ASSINATURA*\n\nOlá, ${atendimentoAtivo.cliente.nome.split(' ')[0]}! Sua proposta de ${categoriaProposta} pela *${zapSignForm.seguradora}* está pronta.\n\n💰 *Valor:* ${zapSignForm.premio} (${zapSignForm.parcelas})\n🛡️ *Coberturas:* ${zapSignForm.coberturaPrincipal}\n\n✍️ *Assine pelo celular em 15 segundos:* ${linkZap}\n\n_Protocolo Oficial: ${atendimentoAtivo.protocolo}_`;
-
-      fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'bypass-tunnel-reminder': 'true' },
-        body: JSON.stringify({
-          phone: atendimentoAtivo.cliente.telefone,
-          message: textoZap
-        })
-      }).catch(() => {});
-    } catch (e) {}
-  };
-
-  // 2. Simular assinatura concluída pelo cliente no ZapSign
-  const handleSimularAssinaturaZapSign = (msgId) => {
-    if (!atendimentoAtivo) return;
-    const agora = new Date();
-    const hora = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-
-    const eventoAssinatura = {
-      id: 'msg-ev-assinado-' + Date.now(),
-      remetente: 'sistema',
-      tipo: 'evento',
-      texto: `✅ Apólice assinada digitalmente com validade jurídica via ZapSign por ${atendimentoAtivo.cliente.nome}. Negócio Concluído!`,
-      horario: hora
-    };
-
-    const listaAtualizada = atendimentos.map(at => {
-      if (at.id === atendimentoAtivo.id) {
-        const novasMensagens = at.mensagens.map(m => {
-          if (m.id === msgId) {
-            return { ...m, statusAssinatura: 'assinado', horarioAssinado: hora };
-          }
-          return m;
-        });
-        return {
-          ...at,
-          mensagens: [...novasMensagens, eventoAssinatura]
-        };
-      }
-      return at;
-    });
-
-    salvarAtendimentos(listaAtualizada);
-    setAtendimentos(listaAtualizada);
-  };
-
-  // 3. Inserir script de resposta rápida no campo de digitação
-  const handleSelecionarRespostaRapida = (texto) => {
-    setTextoMensagem(texto);
-    setModalRespostasRapidasOpen(false);
   };
 
   // Finalizar atendimento -> Dispara mensagem de despedida ao cliente e move para histórico
@@ -1031,99 +884,6 @@ export default function CentralAtendimento({ onVoltarSite }) {
                     );
                   }
 
-                  // 5. CARD OFICIAL ZAPSIGN: MINUTA DE APÓLICE & ASSINATURA ELETRÔNICA
-                  if (msg.tipo === 'zapsign_proposta') {
-                    const isAssinado = msg.statusAssinatura === 'assinado';
-                    return (
-                      <div key={msg.id} className="flex justify-end animate-fadeIn my-1.5">
-                        <div className="max-w-[460px] w-full bg-gradient-to-br from-white to-slate-50 border-2 border-emerald-500/40 rounded-2xl p-4 shadow-lg space-y-3 relative overflow-hidden">
-                          {/* Faixa decorativa superior ZapSign */}
-                          <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-emerald-500 via-teal-500 to-blue-600"></div>
-
-                          {/* Cabeçalho do Card */}
-                          <div className="flex items-center justify-between border-b border-slate-100 pb-2.5">
-                            <div className="flex items-center gap-2">
-                              <div className="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold text-sm shadow-sm">
-                                ✍️
-                              </div>
-                              <div>
-                                <span className="text-[9.5px] font-bold uppercase tracking-wider text-emerald-800 block">
-                                  ZapSign • Assinatura Eletrônica Oficial
-                                </span>
-                                <p className="text-xs font-black text-[#062653] leading-tight">
-                                  {msg.titulo || `Minuta de Apólice • ${msg.categoria}`}
-                                </p>
-                              </div>
-                            </div>
-                            <span className={`px-2 py-0.5 rounded-full text-[9.5px] font-black uppercase tracking-wider ${
-                              isAssinado 
-                                ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' 
-                                : 'bg-amber-100 text-amber-800 border border-amber-200 animate-pulse'
-                            }`}>
-                              {isAssinado ? '✅ Assinado' : '⏳ Aguardando Assinatura'}
-                            </span>
-                          </div>
-
-                          {/* Detalhes da Apólice & Seguradora */}
-                          <div className="bg-slate-50/90 rounded-xl p-3 border border-slate-100 space-y-2 text-xs">
-                            <div className="flex justify-between items-center text-slate-600">
-                              <span className="text-[11px]">Seguradora Parceira:</span>
-                              <strong className="text-[#062653] font-bold text-xs">{msg.seguradora}</strong>
-                            </div>
-                            <div className="flex justify-between items-center text-slate-600">
-                              <span className="text-[11px]">Investimento / Prêmio:</span>
-                              <strong className="text-emerald-700 font-extrabold text-sm">{msg.premio}</strong>
-                            </div>
-                            <div className="flex justify-between items-center text-slate-600">
-                              <span className="text-[11px]">Condição de Pagamento:</span>
-                              <span className="font-semibold text-slate-700 text-[11px]">{msg.parcelas}</span>
-                            </div>
-                            <div className="pt-1.5 border-t border-slate-200/60 text-[11px] text-slate-500">
-                              <strong className="text-slate-700 block mb-0.5 text-[10.5px]">Coberturas Contratadas:</strong>
-                              {msg.cobertura}
-                            </div>
-                          </div>
-
-                          {/* Ação de Assinatura Interativa */}
-                          {isAssinado ? (
-                            <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-2.5 text-center space-y-1">
-                              <div className="flex items-center justify-center gap-1.5 text-emerald-800 font-bold text-xs">
-                                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                                <span>Documento Assinado com Validade Jurídica (ICP-Brasil)</span>
-                              </div>
-                              <p className="text-[10px] text-emerald-700">
-                                Assinado por {atendimentoAtivo.cliente.nome} via celular • {msg.horarioAssinado || msg.horario}
-                              </p>
-                            </div>
-                          ) : (
-                            <div className="space-y-2">
-                              <button
-                                type="button"
-                                onClick={() => handleSimularAssinaturaZapSign(msg.id)}
-                                className="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md transition-all cursor-pointer"
-                              >
-                                <PenTool className="w-3.5 h-3.5" />
-                                <span>Assinar no ZapSign (Simular Clique do Segurado)</span>
-                              </button>
-                              <p className="text-[10px] text-center text-slate-400">
-                                Link enviado ao WhatsApp do segurado: <span className="font-mono text-[#0866C9]">{msg.linkAssinatura}</span>
-                              </p>
-                            </div>
-                          )}
-
-                          <div className="flex items-center justify-between text-[10px] text-slate-400 pt-1">
-                            <span>Emitido por {msg.atendenteNome}</span>
-                            <div className="flex items-center gap-1">
-                              <span>{msg.horario}</span>
-                              <CheckCheck className="w-3 h-3 text-[#0866C9]" />
-                            </div>
-                          </div>
-
-                        </div>
-                      </div>
-                    );
-                  }
-
                   // Mensagem normal da Atendente
                   if (msg.remetente === 'atendente') {
                     return (
@@ -1157,60 +917,30 @@ export default function CentralAtendimento({ onVoltarSite }) {
               {/* Barra de Envio de Mensagens */}
               <div className="p-3.5 border-t border-slate-200 bg-white">
                 
-                {/* Linha Superior da Barra: Ações Rápidas & Status */}
-                <div className="flex flex-wrap items-center justify-between gap-2 mb-2.5">
+                {/* Botão de demonstração útil para o teste ao vivo */}
+                <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
                     <span className="relative flex h-2 w-2">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                       <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                     </span>
                     <span className="text-[11px] text-slate-600">
-                      Titular: <strong className="text-[#062653] font-extrabold">{atendenteTitular.nome}</strong>
+                      A bola agora está com: <strong className="text-[#062653] font-extrabold">{atendenteTitular.nome}</strong>
+                      <span className="ml-1 text-[10px] text-emerald-700 font-bold bg-emerald-50 px-1.5 py-0.5 rounded-md border border-emerald-200">
+                        Titular Atual
+                      </span>
                     </span>
                   </div>
                   
-                  {/* BOTÕES DE AÇÃO RÁPIDA: RESPOSTAS RÁPIDAS + ZAPSIGN + SIMULAÇÃO */}
-                  <div className="flex items-center gap-1.5">
-                    {/* Botão Respostas Rápidas */}
-                    <button
-                      type="button"
-                      onClick={() => setModalRespostasRapidasOpen(true)}
-                      className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-[11px] font-semibold transition-all shadow-2xs"
-                      title="Scripts prontos para cotação, documentos e sinistros"
-                    >
-                      <Zap className="w-3 h-3 text-amber-600 fill-amber-500" />
-                      <span>Respostas Rápidas</span>
-                    </button>
-
-                    {/* Botão ZapSign (Fechar Negócio) */}
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setZapSignForm(prev => ({
-                          ...prev,
-                          categoria: atendimentoAtivo.categoria || 'Seguro Auto',
-                          premio: atendimentoAtivo.categoria?.toLowerCase().includes('agro') ? 'R$ 14.800,00' : 'R$ 2.450,00',
-                          parcelas: atendimentoAtivo.categoria?.toLowerCase().includes('agro') ? '4x de R$ 3.700,00 safra' : '10x de R$ 245,00 sem juros'
-                        }));
-                        setModalZapSignOpen(true);
-                      }}
-                      className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-[11px] font-bold transition-all shadow-sm ring-1 ring-emerald-400/30"
-                      title="Gera proposta com link do ZapSign para assinatura digital em 15s"
-                    >
-                      <PenTool className="w-3 h-3" />
-                      <span>Emitir ZapSign</span>
-                    </button>
-
-                    {/* Simular resposta do cliente na demonstração */}
-                    <button
-                      type="button"
-                      onClick={handleSimularRespostaCliente}
-                      className="text-[10px] text-[#0866C9] hover:underline font-medium ml-1"
-                      title="Gera uma resposta do cliente para enriquecer a apresentação"
-                    >
-                      + Simular Cliente
-                    </button>
-                  </div>
+                  {/* Simular resposta do cliente na demonstração */}
+                  <button
+                    type="button"
+                    onClick={handleSimularRespostaCliente}
+                    className="text-[10px] text-[#0866C9] hover:underline font-medium"
+                    title="Gera uma resposta do cliente para enriquecer a apresentação"
+                  >
+                    + Simular Resposta do Cliente
+                  </button>
                 </div>
 
                 <form onSubmit={handleEnviarMensagem} className="flex items-center gap-2">
@@ -1280,36 +1010,6 @@ export default function CentralAtendimento({ onVoltarSite }) {
                 <span className="inline-block mt-0.5 px-2 py-0.5 rounded-md bg-blue-50 text-[#0866C9] font-medium text-[11px] border border-blue-100">
                   {atendimentoAtivo.categoria}
                 </span>
-              </div>
-            </div>
-
-            {/* STATUS DO NEGÓCIO & FICHA TÉCNICA */}
-            <div className="space-y-2 pt-1 border-t border-slate-100">
-              {/* Alerta de Renovação da Carteira */}
-              <div className="bg-amber-50/90 border border-amber-200/80 rounded-xl p-2.5 text-xs space-y-1">
-                <div className="flex items-center gap-1.5 text-amber-900 font-bold text-[10.5px]">
-                  <Calendar className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                  <span>Alerta de Renovação da Carteira</span>
-                </div>
-                <p className="text-[11px] text-amber-900 leading-tight">
-                  Vencimento Anterior: <strong>18/12/2026</strong> (46 dias)
-                </p>
-                <span className="inline-block px-1.5 py-0.5 rounded text-[9px] font-bold bg-amber-200/70 text-amber-950">
-                  ⚡ Disparo de Renovação Ativo
-                </span>
-              </div>
-
-              {/* Previsão de Comissão da Corretora */}
-              <div className="bg-emerald-50/90 border border-emerald-200/80 rounded-xl p-2.5 text-xs flex items-center justify-between">
-                <div>
-                  <span className="text-[9.5px] text-emerald-800 font-bold block uppercase tracking-wider">Comissão Estimada (20%)</span>
-                  <p className="text-xs font-black text-emerald-950 mt-0.5">
-                    {atendimentoAtivo.categoria?.toLowerCase().includes('agro') ? 'R$ 2.960,00' : 'R$ 490,00'}
-                  </p>
-                </div>
-                <div className="w-7 h-7 rounded-lg bg-emerald-600 text-white flex items-center justify-center font-bold text-xs shadow-2xs">
-                  R$
-                </div>
               </div>
             </div>
 
@@ -1486,207 +1186,6 @@ export default function CentralAtendimento({ onVoltarSite }) {
             >
               Fechar
             </button>
-
-          </div>
-        </div>
-      )}
-
-      {/* ================= MODAL: RESPOSTAS RÁPIDAS (CANNED RESPONSES) ================= */}
-      {modalRespostasRapidasOpen && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-4">
-            
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center font-bold">
-                  <Zap className="w-4 h-4 fill-amber-500 text-amber-600" />
-                </div>
-                <div>
-                  <h3 className="font-bold text-sm text-[#062653]">Scripts de Respostas Rápidas</h3>
-                  <p className="text-[11px] text-slate-400">Clique para carregar o modelo no campo de digitação</p>
-                </div>
-              </div>
-              <button 
-                onClick={() => setModalRespostasRapidasOpen(false)}
-                className="text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-100"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <div className="space-y-2.5 max-h-[60vh] overflow-y-auto pr-1">
-              {RESPOSTAS_RAPIDAS.map((resp) => (
-                <div
-                  key={resp.id}
-                  onClick={() => handleSelecionarRespostaRapida(resp.texto)}
-                  className="p-3.5 rounded-2xl border border-slate-200 hover:border-[#0866C9] hover:bg-blue-50/50 cursor-pointer transition-all space-y-1.5 group"
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-xs text-[#062653] group-hover:text-[#0866C9]">
-                      {resp.titulo}
-                    </span>
-                    <span className="text-[10px] text-slate-400 group-hover:text-[#0866C9] font-medium">
-                      Usar Modelo →
-                    </span>
-                  </div>
-                  <p className="text-[11px] text-slate-500 line-clamp-2 leading-relaxed">
-                    {resp.texto}
-                  </p>
-                </div>
-              ))}
-            </div>
-
-            <div className="pt-2 border-t border-slate-100 flex justify-end">
-              <button
-                type="button"
-                onClick={() => setModalRespostasRapidasOpen(false)}
-                className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100"
-              >
-                Cancelar
-              </button>
-            </div>
-
-          </div>
-        </div>
-      )}
-
-      {/* ================= MODAL: EMISSÃO DE PROPOSTA ZAPSIGN ================= */}
-      {modalZapSignOpen && atendimentoAtivo && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-4 relative overflow-hidden">
-            
-            {/* Faixa decorativa superior */}
-            <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-blue-600"></div>
-
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3 pt-1">
-              <div className="flex items-center gap-2.5">
-                <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-500 text-white flex items-center justify-center text-lg shadow-sm">
-                  ✍️
-                </div>
-                <div>
-                  <h3 className="font-extrabold text-sm text-[#062653]">Emitir Proposta Oficial ZapSign</h3>
-                  <p className="text-[11px] text-emerald-700 font-medium">Assinatura digital válida por 48 horas via celular</p>
-                </div>
-              </div>
-              <button 
-                onClick={() => setModalZapSignOpen(false)}
-                className="text-slate-400 hover:text-slate-600 p-1.5 rounded-xl hover:bg-slate-100"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            {/* Informações do Segurado Pré-carregadas */}
-            <div className="bg-slate-50 rounded-2xl p-3 border border-slate-100 flex items-center justify-between text-xs">
-              <div>
-                <span className="text-[10px] text-slate-400 block font-semibold">SEGURADO(A)</span>
-                <strong className="text-[#062653] font-bold">{atendimentoAtivo.cliente.nome}</strong>
-              </div>
-              <div className="text-right">
-                <span className="text-[10px] text-slate-400 block font-semibold">WHATSAPP</span>
-                <span className="text-slate-700 font-mono text-[11px]">{atendimentoAtivo.cliente.telefone}</span>
-              </div>
-            </div>
-
-            {/* Campos do Formulário ZapSign */}
-            <div className="space-y-3 text-xs">
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-[11px] font-bold text-[#062653] mb-1">
-                    Seguradora Parceira:
-                  </label>
-                  <select
-                    value={zapSignForm.seguradora}
-                    onChange={(e) => setZapSignForm({ ...zapSignForm, seguradora: e.target.value })}
-                    className="w-full p-2.5 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-emerald-500 bg-white"
-                  >
-                    <option value="Porto Seguro">Porto Seguro</option>
-                    <option value="Azul Seguros">Azul Seguros</option>
-                    <option value="Tokio Marine">Tokio Marine</option>
-                    <option value="Allianz Seguros">Allianz Seguros</option>
-                    <option value="Mapfre Seguros">Mapfre Seguros</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-[11px] font-bold text-[#062653] mb-1">
-                    Modalidade do Seguro:
-                  </label>
-                  <input
-                    type="text"
-                    value={zapSignForm.categoria}
-                    onChange={(e) => setZapSignForm({ ...zapSignForm, categoria: e.target.value })}
-                    placeholder="Ex: Seguro Veículos, Agro..."
-                    className="w-full p-2.5 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-emerald-500"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-[11px] font-bold text-[#062653] mb-1">
-                    Valor Total do Prêmio (Anual):
-                  </label>
-                  <input
-                    type="text"
-                    value={zapSignForm.premio}
-                    onChange={(e) => setZapSignForm({ ...zapSignForm, premio: e.target.value })}
-                    placeholder="Ex: R$ 2.450,00"
-                    className="w-full p-2.5 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-emerald-500 font-bold text-emerald-800"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-[11px] font-bold text-[#062653] mb-1">
-                    Condição de Pagamento:
-                  </label>
-                  <input
-                    type="text"
-                    value={zapSignForm.parcelas}
-                    onChange={(e) => setZapSignForm({ ...zapSignForm, parcelas: e.target.value })}
-                    placeholder="Ex: 10x de R$ 245,00 sem juros"
-                    className="w-full p-2.5 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-emerald-500"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-[11px] font-bold text-[#062653] mb-1">
-                  Resumo das Coberturas Inclusas na Apólice:
-                </label>
-                <textarea
-                  rows="2"
-                  value={zapSignForm.coberturaPrincipal}
-                  onChange={(e) => setZapSignForm({ ...zapSignForm, coberturaPrincipal: e.target.value })}
-                  className="w-full p-2.5 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-emerald-500 resize-none text-slate-700"
-                ></textarea>
-              </div>
-            </div>
-
-            <div className="bg-emerald-50/80 rounded-2xl p-3 border border-emerald-200/80 text-[11px] text-emerald-900 flex items-center gap-2">
-              <ShieldCheck className="w-5 h-5 text-emerald-600 shrink-0" />
-              <span>
-                O documento gerado possui autenticação eletrônica criptografada com validade jurídica (MP 2.200-2/2001 e Lei 14.063/2020).
-              </span>
-            </div>
-
-            <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
-              <button
-                type="button"
-                onClick={() => setModalZapSignOpen(false)}
-                className="px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100 transition-colors"
-              >
-                Cancelar
-              </button>
-              <button
-                type="button"
-                onClick={handleEmitirZapSign}
-                className="px-5 py-2.5 rounded-xl text-xs font-bold bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white flex items-center gap-2 shadow-md transition-all cursor-pointer"
-              >
-                <PenTool className="w-3.5 h-3.5" />
-                <span>Gerar e Enviar via WhatsApp</span>
-              </button>
-            </div>
 
           </div>
         </div>
