@@ -5,6 +5,11 @@ import {
   salvarAtendimentos 
 } from '../services/atendimentoService';
 import { 
+  checarStatusZApi, 
+  obterQrCodeZApi, 
+  enviarMensagemZApi 
+} from '../services/zapiService';
+import { 
   MessageSquare, 
   Send, 
   CheckCheck, 
@@ -42,7 +47,7 @@ export default function CentralAtendimento({ onVoltarSite }) {
   const [atendimentoSelecionadoId, setAtendimentoSelecionadoId] = useState(null);
   const [textoMensagem, setTextoMensagem] = useState('');
   
-  // Status da Conexão Real com o WhatsApp via Gateway Baileys
+  // Status da Conexão Real com a Z-API Oficial na Nuvem
   const [gatewayStatus, setGatewayStatus] = useState({
     status: 'VERIFICANDO',
     phone: null,
@@ -50,30 +55,45 @@ export default function CentralAtendimento({ onVoltarSite }) {
   });
   const [modalQrCodeOpen, setModalQrCodeOpen] = useState(false);
 
-  // Consulta o Gateway a cada 3 segundos para sincronizar o status
+  // Sincroniza o status da Z-API em tempo real
   useEffect(() => {
-    const checarStatus = async () => {
+    let cancelado = false;
+    const sincronizarZApi = async () => {
       try {
-        const url = window.location.hostname === 'localhost' 
-          ? 'http://localhost:3001/status' 
-          : 'https://large-teeth-live.loca.lt/status';
-
-        const res = await fetch(url, {
-          headers: { 'bypass-tunnel-reminder': 'true' }
-        });
-        if (res.ok) {
-          const data = await res.json();
-          setGatewayStatus(data);
+        const res = await checarStatusZApi();
+        if (cancelado) return;
+        if (res.connected) {
+          const telFormatado = res.phone ? `(${res.phone.slice(2, 4)}) ${res.phone.slice(4)}` : null;
+          setGatewayStatus({
+            status: 'CONNECTED',
+            phone: telFormatado,
+            qrCode: null
+          });
+        } else {
+          setGatewayStatus(prev => ({
+            ...prev,
+            status: 'DISCONNECTED'
+          }));
         }
-      } catch (e) {
-        // Gateway ainda iniciando ou offline
-      }
+      } catch (e) {}
     };
 
-    checarStatus();
-    const interval = setInterval(checarStatus, 3000);
-    return () => clearInterval(interval);
+    sincronizarZApi();
+    const interval = setInterval(sincronizarZApi, 8000);
+    return () => {
+      cancelado = true;
+      clearInterval(interval);
+    };
   }, []);
+
+  // Abrir modal do QR Code e buscar imagem direta da Z-API
+  const handleAbrirModalQrCode = async () => {
+    setModalQrCodeOpen(true);
+    const qr = await obterQrCodeZApi();
+    if (qr) {
+      setGatewayStatus(prev => ({ ...prev, qrCode: qr }));
+    }
+  };
   
   // Controle de Abas: 'ativas' (Mesa Limpa) vs 'historico' (Arquivo/Pesquisa)
   const [abaAtual, setAbaAtual] = useState('ativas'); 
@@ -150,26 +170,10 @@ export default function CentralAtendimento({ onVoltarSite }) {
     const agora = new Date();
     const hora = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
 
-    // Dispara via WhatsApp Real através do nosso Gateway Baileys
-    try {
-      const endpoint = window.location.hostname === 'localhost' 
-        ? 'http://localhost:3001/send-message' 
-        : 'https://large-teeth-live.loca.lt/send-message';
-
-      fetch(endpoint, {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'bypass-tunnel-reminder': 'true'
-        },
-        body: JSON.stringify({
-          phone: atendimentoAtivo.cliente.telefone,
-          text: textoFormatado
-        })
-      }).catch(err => console.log('Envio WhatsApp local/background:', err));
-    } catch (err) {
-      console.error('Erro ao conectar ao gateway:', err);
-    }
+    // Dispara via WhatsApp Real através da Z-API Oficial na Nuvem
+    enviarMensagemZApi(atendimentoAtivo.cliente.telefone, textoFormatado).catch(err => {
+      console.log('Envio Z-API background:', err);
+    });
 
     const novaMsg = {
       id: 'msg-' + Date.now(),
@@ -243,24 +247,8 @@ export default function CentralAtendimento({ onVoltarSite }) {
       horario: hora
     };
 
-    // Dispara no WhatsApp Real através do nosso Gateway Baileys / Z-API
-    try {
-      const endpoint = window.location.hostname === 'localhost' 
-        ? 'http://localhost:3001/send-message' 
-        : 'https://large-teeth-live.loca.lt/send-message';
-
-      fetch(endpoint, {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'bypass-tunnel-reminder': 'true'
-        },
-        body: JSON.stringify({
-          phone: atendimentoAtivo.cliente.telefone,
-          message: textoDespedida
-        })
-      }).catch(() => {});
-    } catch (e) {}
+    // Dispara no WhatsApp Real através da Z-API Oficial na Nuvem
+    enviarMensagemZApi(atendimentoAtivo.cliente.telefone, textoDespedida).catch(() => {});
 
     // 2. Evento interno de encerramento do sistema
     const eventoFechamento = {
@@ -471,7 +459,7 @@ export default function CentralAtendimento({ onVoltarSite }) {
             </div>
           ) : (
             <button
-              onClick={() => setModalQrCodeOpen(true)}
+              onClick={handleAbrirModalQrCode}
               className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/40 text-amber-200 text-xs font-semibold transition-all shadow-sm"
               title="Clique para ler o QR Code e conectar seu WhatsApp"
             >
