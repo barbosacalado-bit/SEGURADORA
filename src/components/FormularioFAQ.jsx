@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Send, ChevronDown, CheckCircle, HelpCircle, PhoneCall, ArrowRight, MessageSquare } from 'lucide-react';
+import { Send, ChevronDown, CheckCircle, HelpCircle, PhoneCall, ArrowRight, MessageSquare, Sparkles, MessageCircle } from 'lucide-react';
 import { criarNovoLeadFormulario, obterAtendentePorModalidade } from '../services/atendimentoService';
+import ChatbotMel from './ChatbotMel';
 
 export default function FormularioFAQ({ produtoSelecionado, onAbrirCentral }) {
   const [formData, setFormData] = useState({
@@ -14,6 +15,7 @@ export default function FormularioFAQ({ produtoSelecionado, onAbrirCentral }) {
   const [enviado, setEnviado] = useState(false);
   const [leadAtribuido, setLeadAtribuido] = useState(null);
   const [activeFaq, setActiveFaq] = useState(0);
+  const [modoPreenchimento, setModoPreenchimento] = useState('chat'); // 'chat' (Mel) | 'formulario'
 
   const faqs = [
     {
@@ -93,19 +95,52 @@ export default function FormularioFAQ({ produtoSelecionado, onAbrirCentral }) {
       <div className="max-w-[1280px] mx-auto px-4 sm:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
           
-          {/* Coluna Esquerda: Formulário de Cotação Rápida */}
-          <div className="lg:col-span-6 bg-white rounded-3xl p-8 sm:p-10 shadow-xl border border-slate-100 relative">
-            <div className="space-y-3 mb-8">
-              <span className="text-xs font-bold text-[#0866C9] uppercase tracking-wider block">
-                Cotação Sem Compromisso
-              </span>
-              <h3 className="text-2xl sm:text-3xl font-extrabold text-[#062653] tracking-tight">
-                Solicite uma proposta personalizada
-              </h3>
-              <p className="text-sm text-[#596273]">
-                Preencha as informações abaixo e nossa equipe em Bebedouro/SP entrará em contato com a melhor opção para seu perfil.
-              </p>
+          {/* Coluna Esquerda: Chatbot Inteligente Mel ou Formulário Tradicional */}
+          {modoPreenchimento === 'chat' ? (
+            <div className="lg:col-span-6 flex flex-col space-y-2">
+              <div className="flex items-center justify-between px-1">
+                <span className="text-[11px] font-bold text-[#0866C9] uppercase tracking-wider flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5 text-cyan-500" />
+                  Atendimento Digital • Cotação Inteligente
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setModoPreenchimento('formulario')}
+                  className="text-[11px] text-slate-400 hover:text-[#0866C9] underline cursor-pointer transition-colors"
+                >
+                  Prefere formulário clássico?
+                </button>
+              </div>
+              <ChatbotMel 
+                produtoSelecionado={produtoSelecionado} 
+                onAbrirCentral={onAbrirCentral} 
+              />
             </div>
+          ) : (
+            /* Coluna Esquerda: Formulário de Cotação Rápida Clássico */
+            <div className="lg:col-span-6 bg-white rounded-3xl p-8 sm:p-10 shadow-xl border border-slate-100 relative">
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-xs font-bold text-[#0866C9] uppercase tracking-wider block">
+                  Cotação Sem Compromisso
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setModoPreenchimento('chat')}
+                  className="text-xs font-bold text-[#0866C9] hover:text-[#062653] flex items-center gap-1.5 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-xl border border-blue-100 transition-all cursor-pointer shadow-xs"
+                >
+                  <Sparkles className="w-3.5 h-3.5 text-cyan-500" />
+                  <span>Cotar no Chat com a Mel</span>
+                </button>
+              </div>
+
+              <div className="space-y-3 mb-8">
+                <h3 className="text-2xl sm:text-3xl font-extrabold text-[#062653] tracking-tight">
+                  Solicite uma proposta personalizada
+                </h3>
+                <p className="text-sm text-[#596273]">
+                  Preencha as informações abaixo e nossa equipe em Bebedouro/SP entrará em contato com a melhor opção para seu perfil.
+                </p>
+              </div>
 
             {enviado ? (
               <div className="p-6 bg-emerald-50 rounded-2xl border border-emerald-200 text-center space-y-4 animate-fadeIn">
@@ -255,6 +290,7 @@ export default function FormularioFAQ({ produtoSelecionado, onAbrirCentral }) {
               </form>
             )}
           </div>
+          )}
 
           {/* Coluna Direita: FAQ Accordion */}
           <div className="lg:col-span-6 space-y-6 text-left" id="faq">
