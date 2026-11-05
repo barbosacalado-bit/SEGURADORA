@@ -105,12 +105,15 @@ export default function ChatbotMel({ produtoSelecionado, onAbrirCentral }) {
     }
   ]);
 
-  const chatEndRef = useRef(null);
+  const chatContainerRef = useRef(null);
 
-  // Rolagem suave automática ao adicionar mensagens
+  // Rolagem suave RESTRITA ao container interno do chat (sem mexer na janela da página)
   useEffect(() => {
-    if (chatEndRef.current) {
-      chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTo({
+        top: chatContainerRef.current.scrollHeight,
+        behavior: 'smooth'
+      });
     }
   }, [mensagens, isTyping, etapa]);
 
@@ -332,7 +335,7 @@ export default function ChatbotMel({ produtoSelecionado, onAbrirCentral }) {
       </div>
 
       {/* ================= CORPO DO CHAT: HISTÓRICO DE MENSAGENS ================= */}
-      <div className="flex-1 p-4 sm:p-5 overflow-y-auto space-y-3.5 bg-[#F8FAFC]">
+      <div ref={chatContainerRef} className="flex-1 p-4 sm:p-5 overflow-y-auto space-y-3.5 bg-[#F8FAFC]">
         {mensagens.map((msg) => {
           const isMel = msg.remetente === 'mel';
           return (
@@ -509,7 +512,6 @@ export default function ChatbotMel({ produtoSelecionado, onAbrirCentral }) {
           </div>
         )}
 
-        <div ref={chatEndRef} />
       </div>
 
       {/* ================= BARRA INFERIOR DE DIGITAÇÃO / AÇÃO ================= */}
@@ -520,7 +522,6 @@ export default function ChatbotMel({ produtoSelecionado, onAbrirCentral }) {
           <form onSubmit={handleEnviarNome} className="flex items-center gap-2">
             <input
               type="text"
-              autoFocus
               placeholder="Digite seu nome (ex: Carlos Silva)..."
               value={inputValor}
               onChange={(e) => setInputValor(e.target.value)}
@@ -549,7 +550,6 @@ export default function ChatbotMel({ produtoSelecionado, onAbrirCentral }) {
           <form onSubmit={handleEnviarTelefone} className="flex items-center gap-2">
             <input
               type="tel"
-              autoFocus
               placeholder="(17) 99999-9999"
               value={inputValor}
               onChange={handleTelefoneChange}
