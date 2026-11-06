@@ -1,7 +1,49 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { ShieldCheck, ArrowRight, PhoneCall, Star, CheckCircle2, Award, Headphones } from 'lucide-react';
 
 export default function Hero({ onOpenTelefones }) {
+  // Frases rotativas representativas de cada área de atuação da Messa Corretora
+  const FRASES = [
+    'o que é mais valioso para sua família.',
+    'o que é mais importante na sua empresa.',
+    'sua safra e maquinário no agronegócio.',
+    'o seu veículo e suas conquistas.'
+  ];
+
+  const [fraseIndex, setFraseIndex] = useState(0);
+  const [textoAtual, setTextoAtual] = useState('');
+  const [estaApagando, setEstaApagando] = useState(false);
+
+  useEffect(() => {
+    const fraseCompleta = FRASES[fraseIndex];
+
+    let timer;
+    if (!estaApagando) {
+      // Digitando letra por letra
+      if (textoAtual.length < fraseCompleta.length) {
+        timer = setTimeout(() => {
+          setTextoAtual(fraseCompleta.substring(0, textoAtual.length + 1));
+        }, 55);
+      } else {
+        // Pausa para leitura no final da frase
+        timer = setTimeout(() => {
+          setEstaApagando(true);
+        }, 2200);
+      }
+    } else {
+      // Apagando com efeito backspace
+      if (textoAtual.length > 0) {
+        timer = setTimeout(() => {
+          setTextoAtual(fraseCompleta.substring(0, textoAtual.length - 1));
+        }, 28);
+      } else {
+        setEstaApagando(false);
+        setFraseIndex((prev) => (prev + 1) % FRASES.length);
+      }
+    }
+
+    return () => clearTimeout(timer);
+  }, [textoAtual, estaApagando, fraseIndex]);
   return (
     <section id="inicio" className="relative overflow-hidden bg-gradient-to-b from-[#F3F6FD] via-white to-white py-14 sm:py-20 lg:py-24">
       {/* Elementos gráficos de fundo decorativos suaves (estilo Insuren) */}
@@ -20,15 +62,16 @@ export default function Hero({ onOpenTelefones }) {
               Messa Corretora de Seguros • Bebedouro / SP
             </div>
 
-            {/* ITEM 3: Título Principal voltado para 2027 com destaque premium */}
-            <h1 className="text-3xl sm:text-5xl lg:text-[56px] font-extrabold text-[#062653] leading-[1.14] tracking-tight">
-              Comece 2027 protegendo o que é <br className="hidden sm:inline" />
+            {/* Título Principal voltado para 2027 com efeito Typewriter dinâmico */}
+            <h1 className="text-3xl sm:text-5xl lg:text-[54px] font-extrabold text-[#062653] leading-[1.18] tracking-tight min-h-[120px] sm:min-h-[140px] lg:min-h-[170px]">
+              Comece 2027 protegendo <br className="hidden sm:inline" />
               <span className="text-[#0866C9] relative inline-block">
-                mais valioso
+                <span>{textoAtual}</span>
+                <span className="inline-block w-[3px] h-[0.8em] bg-[#0866C9] ml-1 align-baseline animate-pulse"></span>
                 <svg className="absolute -bottom-2 left-0 w-full h-2.5 text-[#08A9E6]/50" viewBox="0 0 100 20" preserveAspectRatio="none">
                   <path d="M0 15 Q 50 0 100 15" stroke="currentColor" strokeWidth="6" fill="transparent" />
                 </svg>
-              </span> para você e sua família.
+              </span>
             </h1>
 
             {/* Texto Complementar com conteúdo real da Messa */}
