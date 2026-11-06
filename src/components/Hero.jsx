@@ -2,48 +2,49 @@ import React, { useState, useEffect } from 'react';
 import { ShieldCheck, ArrowRight, PhoneCall, Star, CheckCircle2, Award, Headphones } from 'lucide-react';
 
 export default function Hero({ onOpenTelefones }) {
-  // Frases rotativas representativas de cada área de atuação da Messa Corretora
-  const FRASES = [
-    'o que é mais valioso para sua família.',
-    'o que é mais importante na sua empresa.',
-    'sua safra e maquinário no agronegócio.',
-    'o seu veículo e suas conquistas.'
+  // Palavras curtas e diretas que alternam no efeito Typewriter
+  const PALAVRAS = [
+    'a sua família.',
+    'o seu agronegócio.',
+    'a sua empresa.',
+    'o seu veículo.',
+    'o seu patrimônio.'
   ];
 
-  const [fraseIndex, setFraseIndex] = useState(0);
+  const [palavraIndex, setPalavraIndex] = useState(0);
   const [textoAtual, setTextoAtual] = useState('');
   const [estaApagando, setEstaApagando] = useState(false);
 
   useEffect(() => {
-    const fraseCompleta = FRASES[fraseIndex];
+    const palavraCompleta = PALAVRAS[palavraIndex];
 
     let timer;
     if (!estaApagando) {
       // Digitando letra por letra
-      if (textoAtual.length < fraseCompleta.length) {
+      if (textoAtual.length < palavraCompleta.length) {
         timer = setTimeout(() => {
-          setTextoAtual(fraseCompleta.substring(0, textoAtual.length + 1));
-        }, 55);
+          setTextoAtual(palavraCompleta.substring(0, textoAtual.length + 1));
+        }, 65);
       } else {
-        // Pausa para leitura no final da frase
+        // Pausa para leitura no final da palavra
         timer = setTimeout(() => {
           setEstaApagando(true);
-        }, 2200);
+        }, 1800);
       }
     } else {
-      // Apagando com efeito backspace
+      // Apagando só a palavra com efeito backspace rápido
       if (textoAtual.length > 0) {
         timer = setTimeout(() => {
-          setTextoAtual(fraseCompleta.substring(0, textoAtual.length - 1));
-        }, 28);
+          setTextoAtual(palavraCompleta.substring(0, textoAtual.length - 1));
+        }, 35);
       } else {
         setEstaApagando(false);
-        setFraseIndex((prev) => (prev + 1) % FRASES.length);
+        setPalavraIndex((prev) => (prev + 1) % PALAVRAS.length);
       }
     }
 
     return () => clearTimeout(timer);
-  }, [textoAtual, estaApagando, fraseIndex]);
+  }, [textoAtual, estaApagando, palavraIndex]);
   return (
     <section id="inicio" className="relative overflow-hidden bg-gradient-to-b from-[#F3F6FD] via-white to-white py-14 sm:py-20 lg:py-24">
       {/* Elementos gráficos de fundo decorativos suaves (estilo Insuren) */}
