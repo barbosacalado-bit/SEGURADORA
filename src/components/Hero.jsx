@@ -2,13 +2,43 @@ import React, { useState, useEffect } from 'react';
 import { ShieldCheck, ArrowRight, PhoneCall, Star, CheckCircle2, Award, Headphones } from 'lucide-react';
 
 export default function Hero({ onOpenTelefones }) {
-  // Palavras curtas e diretas que alternam no efeito Typewriter
-  const PALAVRAS = [
-    'a sua família.',
-    'o seu agronegócio.',
-    'a sua empresa.',
-    'o seu veículo.',
-    'o seu patrimônio.'
+  // Itens sincronizados: Palavras curtas no Typewriter + Imagem e Legenda correspondentes
+  const ITENS_HERO = [
+    {
+      palavra: 'a sua família.',
+      etiqueta: 'Messa Vida & Saúde',
+      titulo: 'Segurança para quem você mais ama',
+      imagem: 'https://images.unsplash.com/photo-1543269865-cbf427effbad?q=80&w=1000&auto=format&fit=crop',
+      alt: 'Família e pessoas protegidas pela Messa Corretora de Seguros'
+    },
+    {
+      palavra: 'o seu agronegócio.',
+      etiqueta: 'Messa Agro Bebedouro',
+      titulo: 'Proteção para lavouras, máquinas e pivôs',
+      imagem: 'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?q=80&w=1000&auto=format&fit=crop',
+      alt: 'Trator e lavoura do agronegócio protegido'
+    },
+    {
+      palavra: 'a sua empresa.',
+      etiqueta: 'Messa Empresarial',
+      titulo: 'Continuidade, frotas e patrimônio corporativo',
+      imagem: 'https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=1000&auto=format&fit=crop',
+      alt: 'Ambiente empresarial protegido pela Messa'
+    },
+    {
+      palavra: 'o seu veículo.',
+      etiqueta: 'Messa Auto & Frota',
+      titulo: 'Assistência 24h e cobertura em todo o Brasil',
+      imagem: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=1000&auto=format&fit=crop',
+      alt: 'Veículo em estrada com seguro auto'
+    },
+    {
+      palavra: 'o seu patrimônio.',
+      etiqueta: 'Messa Residencial & Consórcios',
+      titulo: 'O seu lar e conquistas sempre blindados',
+      imagem: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=1000&auto=format&fit=crop',
+      alt: 'Residência moderna e patrimônio protegido'
+    }
   ];
 
   const [palavraIndex, setPalavraIndex] = useState(0);
@@ -16,7 +46,7 @@ export default function Hero({ onOpenTelefones }) {
   const [estaApagando, setEstaApagando] = useState(false);
 
   useEffect(() => {
-    const palavraCompleta = PALAVRAS[palavraIndex];
+    const palavraCompleta = ITENS_HERO[palavraIndex].palavra;
 
     let timer;
     if (!estaApagando) {
@@ -29,7 +59,7 @@ export default function Hero({ onOpenTelefones }) {
         // Pausa para leitura no final da palavra
         timer = setTimeout(() => {
           setEstaApagando(true);
-        }, 1800);
+        }, 2200);
       }
     } else {
       // Apagando só a palavra com efeito backspace rápido
@@ -39,7 +69,7 @@ export default function Hero({ onOpenTelefones }) {
         }, 35);
       } else {
         setEstaApagando(false);
-        setPalavraIndex((prev) => (prev + 1) % PALAVRAS.length);
+        setPalavraIndex((prev) => (prev + 1) % ITENS_HERO.length);
       }
     }
 
@@ -159,21 +189,33 @@ export default function Hero({ onOpenTelefones }) {
               
               {/* Moldura orgânica com degradê e sombras suaves */}
               <div className="relative rounded-3xl overflow-hidden shadow-2xl bg-gradient-to-tr from-[#062653] to-[#0866C9] p-1.5">
-                <div className="relative rounded-[22px] overflow-hidden bg-white">
-                  <img
-                    src="https://images.unsplash.com/photo-1543269865-cbf427effbad?q=80&w=1000&auto=format&fit=crop"
-                    alt="Família protegida pela Messa Corretora de Seguros"
-                    className="w-full h-[420px] sm:h-[480px] object-cover object-center transform hover:scale-102 transition-transform duration-700"
-                  />
+                <div className="relative rounded-[22px] overflow-hidden bg-slate-900 h-[420px] sm:h-[480px]">
+                  {/* Imagens sincronizadas em crossfade suave */}
+                  {ITENS_HERO.map((item, idx) => (
+                    <img
+                      key={idx}
+                      src={item.imagem}
+                      alt={item.alt}
+                      className={`absolute inset-0 w-full h-full object-cover object-center transition-all duration-1000 ease-in-out ${
+                        palavraIndex === idx
+                          ? 'opacity-100 scale-100 z-10'
+                          : 'opacity-0 scale-105 pointer-events-none z-0'
+                      }`}
+                    />
+                  ))}
                   
-                  {/* Degradê sutil de transição inferior */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#062653]/60 via-transparent to-transparent"></div>
+                  {/* Degradê sutil de transição inferior para leitura do selo */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#062653]/85 via-[#062653]/20 to-transparent z-20 pointer-events-none"></div>
                   
-                  {/* Selo sobreposto no rodapé da imagem */}
-                  <div className="absolute bottom-5 left-5 right-5 p-4 rounded-xl bg-white/95 backdrop-blur-md border border-white/40 shadow-lg flex items-center justify-between">
-                    <div>
-                      <p className="text-[11px] font-bold text-[#0866C9] uppercase tracking-wider">Messa Corretora</p>
-                      <p className="text-sm font-bold text-[#062653]">Segurança para todas as fases</p>
+                  {/* Selo sobreposto no rodapé da imagem sincronizado com o nicho atual */}
+                  <div className="absolute bottom-5 left-5 right-5 p-4 rounded-xl bg-white/95 backdrop-blur-md border border-white/40 shadow-lg flex items-center justify-between z-30 transition-all duration-500">
+                    <div className="min-w-0 pr-2">
+                      <p className="text-[11px] font-bold text-[#0866C9] uppercase tracking-wider truncate">
+                        {ITENS_HERO[palavraIndex].etiqueta}
+                      </p>
+                      <p className="text-sm font-bold text-[#062653] truncate">
+                        {ITENS_HERO[palavraIndex].titulo}
+                      </p>
                     </div>
                     <div className="w-10 h-10 rounded-lg bg-[#F3F6FD] flex items-center justify-center shrink-0">
                       <ShieldCheck className="w-5 h-5 text-[#0866C9]" />
