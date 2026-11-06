@@ -29,15 +29,15 @@ export default function Hero({ onOpenTelefones }) {
       palavra: 'o seu veículo.',
       etiqueta: 'Messa Auto & Frota',
       titulo: 'Assistência 24h e cobertura em todo o Brasil',
-      imagem: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=1000&auto=format&fit=crop',
-      alt: 'Veículo em estrada com seguro auto'
+      imagem: 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?q=80&w=1000&auto=format&fit=crop',
+      alt: 'SUV moderno e familiar protegido com seguro auto e assistência 24h'
     },
     {
       palavra: 'o seu patrimônio.',
       etiqueta: 'Messa Residencial & Consórcios',
       titulo: 'O seu lar e conquistas sempre blindados',
-      imagem: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=1000&auto=format&fit=crop',
-      alt: 'Residência moderna e patrimônio protegido'
+      imagem: 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?q=80&w=1000&auto=format&fit=crop',
+      alt: 'Casa residencial acolhedora e patrimônio protegido pela Messa'
     }
   ];
 
@@ -224,8 +224,8 @@ export default function Hero({ onOpenTelefones }) {
                 </div>
               </div>
 
-              {/* Card Flutuante de Apoio (Estilo Insuren) */}
-              <div className="absolute -top-6 -left-6 sm:-left-8 bg-white p-3.5 sm:p-4 rounded-2xl shadow-xl border border-slate-100 flex items-center gap-3 animate-float hidden sm:flex">
+              {/* Card Flutuante de Apoio (Estilo Insuren) - Camada z-40 e ancoragem no topo da foto */}
+              <div className="absolute -top-5 left-4 sm:-top-6 sm:left-4 z-40 bg-white p-3.5 sm:p-4 rounded-2xl shadow-2xl border border-slate-100 flex items-center gap-3 animate-float hidden sm:flex">
                 <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#0866C9] to-[#08A9E6] text-white flex items-center justify-center shrink-0 shadow-md">
                   <ShieldCheck className="w-6 h-6" />
                 </div>
